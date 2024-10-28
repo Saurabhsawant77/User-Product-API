@@ -14,7 +14,7 @@ npm i express mongoose jsonwebtoken fs dotenv winston winston-mongodb nodemon bc
 
 
 
-Post Man Raw JSON
+PostMan Raw JSON
 
 http://localhost:3030/api/users/signup
 {

@@ -1,5 +1,6 @@
 const express = require('express');
-const { handleSignUp, handleLogin,handleGetAllUsers,handleGetUserById,handleUpdateUserById } = require('../controllers/user')
+const { handleSignUp, handleLogin,handleGetAllUsers,handleGetUserById,handleUpdateUserById, handleAddUser } = require('../controllers/user');
+const authenticateToken = require('../middleware/jwtAuthentication');
 
 const userRouter = express.Router();
 
@@ -14,7 +15,8 @@ userRouter.post('/login',handleLogin)
 userRouter.get('/',handleGetAllUsers);
 userRouter.get('/:id',handleGetUserById);
 userRouter.put('/:id',handleUpdateUserById);
-userRouter.post('/',handleSignUp);
+userRouter.post('/add',authenticateToken,handleAddUser);
+
 
 
 module.exports = userRouter

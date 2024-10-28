@@ -1,4 +1,5 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const User = require('./userSchema');
 
 const productSchema = mongoose.Schema({
     name:{
@@ -11,7 +12,7 @@ const productSchema = mongoose.Schema({
     },
     userId:{
         type:mongoose.Schema.Types.ObjectId,
-        required:true,
+        required:false,
         ref:'User'
     },
     published :{
@@ -26,20 +27,22 @@ const productSchema = mongoose.Schema({
     price:{
         type:Number,
         required : true,
+        default : 0,
     },
     rating:{
         type : Number,
-        required:false
+        required:false,
+        default : 0,
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', 
-        required: true
+        required: false
     },
     updatedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: false
     }
 
 },
@@ -47,8 +50,20 @@ const productSchema = mongoose.Schema({
     timestamps:true, //created createAt, updateAt
 });
 
-const Product = mongoose.model("Product",productSchema);
+// productSchema.pre('save', function(next) {
+//     if (!this.createdBy) {
+//         this.createdBy = this._id; 
+//     }
+//     if (!this.updatedBy) {
+//         this.updatedBy = this._id; 
+//     }
+//     if(!this.userId){
+//         this.userId = this._id;
+//     }
+//     next();
+// });
 
+const Product = mongoose.model("Product",productSchema);
 module.exports = Product
 
 

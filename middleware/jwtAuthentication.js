@@ -6,7 +6,7 @@ const bcryptjs = require('bcryptjs');
 
 const authenticateToken = (req,res,next) => {
     const authHeader = req.headers['authorization'];
-    const token = authHeader &&  authHeader.split(' ')[1];
+    const token = authHeader;
 
     if(!token){
         return res.status(401).json({message:"Access denied"});
