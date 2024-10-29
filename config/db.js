@@ -7,10 +7,9 @@ const connectMongoDB = async (url) =>{
     return await mongoose.connect(url,{
         useNewUrlParser: true,
         useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 30000, // 30 seconds
-        keepAlive: true,
-        keepAliveInitialDelay: 300000, // 5 minutes
-        retryWrites: true, 
+        serverSelectionTimeoutMS: 30000, 
+        socketTimeoutMS: 45000,
+        retryWrites: true
     })
     .then(() => {
         logger.info("MongoDB connected...");
