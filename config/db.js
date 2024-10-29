@@ -4,7 +4,14 @@ const logger = require('../middleware/logger');
 
 
 const connectMongoDB = async (url) =>{  
-    return await mongoose.connect(url)
+    return await mongoose.connect(url,{
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 30000, // 30 seconds
+        keepAlive: true,
+        keepAliveInitialDelay: 300000, // 5 minutes
+        retryWrites: true, 
+    })
     .then(() => {
         logger.info("MongoDB connected...");
         console.log("MongoDB connected...");
