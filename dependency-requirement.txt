@@ -7,10 +7,31 @@ npm i winston                # Install Winston for logging (includes createLogge
 npm i winston-mongodb        # Install Winston transport for MongoDB
 npm i nodemon                # Install Nodemon for keeping server up 
 npm i bcryptjs               # Install bcryptjs to hash the password
+npm i multer                 # Install multer to store the images
+npm i winston-mongo          # Install winston-mongo to created logs and add it in mongoDB
 
 
+npm i express mongoose jsonwebtoken fs dotenv winston winston-mongodb nodemon bcryptjs multer winston-mongo
 
-npm i express mongoose jsonwebtoken fs dotenv winston winston-mongodb nodemon bcryptjs
+
+-------------------------USER CRUD-------------------------------------
+
+POST api/users                    -    add new user
+PUT  api/users/:id                -     update user by id
+GET api/users                       -     get all user
+GET api/users/:id                 -     get each user details
+GET api/products/:userId    -    get all products by user id
+
+-------------------------Product CRUD-----------------------------------
+
+GET api/products.                       - get all products
+GET api/products/:id                  -    get products by id
+POST api/products add              -  new products
+PUT api/products/:id                   -  update products by id
+DELETE api/products/:id            -   remove products by id
+GET api/products/published      -  find all published products
+GET api/products?name=           -  find all products by name
+
 
 
 

@@ -1,6 +1,7 @@
 const User = require('../models/userSchema');
 const  bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const logger = require('../middleware/logger');
 
 
 const handleSignUp = async (req,res) =>{
@@ -13,6 +14,7 @@ const handleSignUp = async (req,res) =>{
         const existingUser = await User.findOne({email});
         console.log(existingUser);
         if(existingUser){
+            logger.error('User already exists',existingUser);
             return res.status(400).json({message: 'User already exists'});
         }
 
@@ -33,11 +35,12 @@ const handleSignUp = async (req,res) =>{
         //     process.env.JWT_SECRET,
         //     { expiresIn: '1h' }
         // );
-
+        logger.info("handleSignUp :: User Created Successfullyy");
         return res.status(201).json({message : "User Created Successfully"});
 
     } catch (error) {
         console.log("Error in Signup",error);
+        logger.error('Internal server error handleSignUp');
         return res.status(501).json({message: 'Internal server error'});
     }
 }
@@ -50,6 +53,7 @@ const handleLogin = async (req,res) =>{
         const user = await User.findOne({email});
 
         if(!user){
+            logger.error('Invalid Email or Password',user);
             return res.status(400).json({message : "Invalid Email or Password"});
         }
 
@@ -58,6 +62,7 @@ const handleLogin = async (req,res) =>{
         const isPasswordValid = await bcryptjs.compare(password,user.password);
 
         if(!isPasswordValid){
+            logger.error('Invalid Email or Password');
             return  res.status(400).json({message : "Invalid Email or Password"});
         }
 
@@ -68,12 +73,13 @@ const handleLogin = async (req,res) =>{
         )
 
         // res.setHeader('Authorization',`Bearer ${token}`);
-
+        logger.info("handleLogin :: UserLogged in Successfully");
         res.status(200).json({message : "Login Successfull",token});
 
         
     } catch (error) {
         console.error(error);
+        logger.error('handleLogin :: Internal server error');
         res.status(500).json({ message: 'Internal server error' });
     }
 }
@@ -87,6 +93,7 @@ const handleAddUser = async (req,res) =>{
         const existingUser = await User.findOne({email});
         console.log(existingUser);
         if(existingUser){
+            logger.error('User already exists');
             return res.status(400).json({message: 'User already exists'});
         }
 
@@ -101,20 +108,26 @@ const handleAddUser = async (req,res) =>{
             createdBy : req.user.userID ,
             updatedBy : req.user.userID
         });
-
-        return res.status(201).json({message : "User Created Successfully"});
+        logger.info("handleAddUser :: User Added Successfully");
+        return res.status(201).json({message : "User Added Successfully"});
     } catch (error) {
-        console.log("Error in Signup",error);
-        return res.status(501).json({message: 'Internal server error'});
+        logger.error('Internal server error handleAddUser',error);
+        return res.status(501).json({message: 'Internal server error handleAddUser'});
     }
 } 
 
 const handleGetAllUsers = async (req,res) =>{
     try{
         const allUsers = await User.find({});
+        if(!allUsers){
+            logger.error('handleGetAllUsers :: No users found');
+            return res.status(404).json({message : "No users found"});
+        }
+        logger.info('Users Fetched Successfully');
         return res.status(200).json(allUsers);
     }
     catch (error){
+        logger.error('handleGetAllUsers :: Internal server error',error);
         return res.status(500).json({message : `Internal server error ${error}`});
     }
 
@@ -128,13 +141,16 @@ const handleGetUserById = async (req,res) =>{
     
     
         if(!user){
+            logger.error('handleGetUserById :: User not found');
             return res.status(404).json({message : "User not found"});
         }
         else{
+            logger.info('User Fetched Successfully');
             return res.status(200).json(user);
         }
     } catch (error) {
         console.log(error + " Error  in handleGetUserById");
+        logger.error('handleGetUserById :: Internal server error',error);
         return res.status(500).json({message : `Internal server error`});
     }
   
@@ -146,15 +162,19 @@ const handleUpdateUserById = async (req,res) =>{
         const  id = req.params.id;
         const updateUser = await User.findById(id);
         if(!updateUser){
+            logger.error('handleUpdateUserById :: User not found');
             return res.status(404).json({message : "User not found"})
         }
         else{
+
             const updatedData = await User.findByIdAndUpdate(req.params.id,req.body); 
+            logger.info('User Updated Successfully');
             return res.json({message : "success"});
         }
         
     } catch (error) {
-        console.log(error + " Error in handleUpdateUserById");
+        // console.log(error + " Error in handleUpdateUserById");
+        logger.error('handleUpdateUserById :: Internal server error',error);
         return res.status(500).json({message : `Internal server error`});
     }
 
