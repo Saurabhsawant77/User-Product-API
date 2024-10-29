@@ -1,22 +1,27 @@
 const express = require('express');
 const authenticateToken = require('../middleware/jwtAuthentication')
 const {handleGetAllProducts,handleGetProductById,handleCreateProduct,handleUpdateProduct,handleDeleteProduct,handleGetPublishedProducts,handleGetProductByName,handleGetProductByUserId} = require('../controllers/product');
+const { upload } = require('../middleware/multer');
+
+const {productValidationAddSchema,productValidationUpdateSchema} = require('../middleware/joiValidation');
 
 
 const productRouter = express.Router();
 
 // Product Routes
 
-productRouter.get('/',handleGetAllProducts);
-productRouter.get('/:id',handleGetProductById);
-productRouter.post('/',authenticateToken,handleCreateProduct);
-productRouter.put('/:id',authenticateToken,handleUpdateProduct);
+productRouter.get('/',authenticateToken,handleGetAllProducts);
+productRouter.get('/:id',authenticateToken,handleGetProductById);
+productRouter.post('/add',productValidationAddSchema,authenticateToken,upload.single('image'),handleCreateProduct);
+productRouter.put('/:id',productValidationUpdateSchema,authenticateToken,upload.single('image'),handleUpdateProduct);
 productRouter.delete('/:id',authenticateToken,handleDeleteProduct);
-productRouter.get('/published',handleGetPublishedProducts);
-productRouter.get('/search',handleGetProductByName);
-productRouter.get('/:userId',authenticateToken,handleGetProductByUserId);
+productRouter.get('/find/:userId',authenticateToken,handleGetProductByUserId);
+productRouter.get('/published/products',authenticateToken,handleGetPublishedProducts);
+productRouter.get('/searchProduct/product',authenticateToken,handleGetProductByName);
 
 
 module.exports ={
     productRouter
 }
+
+
