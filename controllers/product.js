@@ -7,6 +7,8 @@ const { upload } = require('../middleware/multer');
 const logger = require('../middleware/logger');
 
 
+
+
 const handleCreateProduct = async (req,res) =>{
 
     try {
@@ -14,8 +16,6 @@ const handleCreateProduct = async (req,res) =>{
             logger.error('handleCreateProduct :: No image uploaded  req file -> ',req.file);
             return res.status(400).json({message: 'No image uploaded'})
         }
-
-
         const {name,description,published,image,price,rating} = req.body;
         const newProduct = await Product({
             name,
