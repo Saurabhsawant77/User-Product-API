@@ -14,9 +14,9 @@ userRouter.post('/login',userLoginValidationSchema,handleLogin)
 
 //User Routes
 
-userRouter.get('/',handleGetAllUsers);
-userRouter.get('/:id',handleGetUserById);
-userRouter.put('/:id',userUpdateValidationSchema,handleUpdateUserById);
+userRouter.get('/',authenticateToken,handleGetAllUsers);
+userRouter.get('/:id',authenticateToken,handleGetUserById);
+userRouter.put('/:id',userUpdateValidationSchema,authenticateToken,handleUpdateUserById);
 userRouter.post('/add',userAddValidationSchema,authenticateToken,handleAddUser);
 
 
