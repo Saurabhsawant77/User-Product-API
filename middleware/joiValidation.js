@@ -23,7 +23,7 @@ const userSignUpSchemaValidation = (req,res,next) =>{
         next();
 
     } catch (error) {
-        logger.error('userSignUpSchemaValidation ::  user data is invalid', req.body);
+        logger.error('userSignUpSchemaValidation ::  user data is invalid', error);
         return  res.status(500).send({message:error.message});
     }
 }
