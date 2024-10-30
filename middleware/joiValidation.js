@@ -136,6 +136,7 @@ const productAddSchema = Joi.object({
 
 const productValidationAddSchema = async (req,res,next) =>{
     try {
+        
         const {error,value} = await  productAddSchema.validate(req.body,{abortEarly: false});
         if(error){
             logger.error(`productValidationAddSchema ::  product data is invalid ${error.details}`);
