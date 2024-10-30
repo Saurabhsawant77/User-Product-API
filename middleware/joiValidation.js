@@ -94,7 +94,7 @@ const updateUserSchema = Joi.object({
     name : Joi.string().min(4).max(20).optional(),
     email : Joi.string().email().optional(),
     password : Joi.string().min(8).optional(),
-    phone : Joi.number().integer().min(1000000000).max(9999999999).required().messages({
+    phone : Joi.number().integer().min(1000000000).max(9999999999).optional().messages({
         'number.base': 'Phone number must be a number.',
         'number.min': 'Phone number must be at least 10 digits.',
         'number.max': 'Phone number cannot exceed 10 digits.',
