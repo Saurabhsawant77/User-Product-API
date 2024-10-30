@@ -56,8 +56,7 @@ const addUserSchema = Joi.object({
     name : Joi.string().min(4).max(10).required(),
     email : Joi.string().email().required(),
     password : Joi.string().min(8).required(),
-    phone : Joi.string().min(1000000000).max(9999999999).required(),
-    address : Joi.string(),
+    phone : Joi.string().min(10).max(10).required(),
     createdBy: Joi.string().optional(),
     updatedBy: Joi.string().optional()
 })
