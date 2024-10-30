@@ -66,7 +66,7 @@ const  userAddValidationSchema = async (req,res,next) =>{
     try {
         const {error,value} = await addUserSchema.validate(req.body,{abortEarly: false});
         if(error){
-            logger.error('userAddValidationSchema ::  user data is invalid', eror.details);
+            logger.error('userAddValidationSchema ::  user data is invalid', error.details);
             return res.status(400).send({message:error.details});
             } 
             logger.info('userAddValidationSchema ::  user data is valid', req.body);
@@ -94,7 +94,7 @@ const userUpdateValidationSchema = async (req,res,next) =>{
     try {
         const {error,value} = await updateUserSchema.validate(req.body,{abortEarly: false});
         if(error){
-            logger.error('userUpdateValidationSchema ::  user data is invalid', eror.details);
+            logger.error('userUpdateValidationSchema ::  user data is invalid', error.details);
             return res.status(400).send({message:error.details});
         }
         logger.info('userUpdateValidationSchema ::  user data is valid', req.body);
@@ -123,7 +123,7 @@ const productValidationAddSchema = async (req,res,next) =>{
     try {
         const {error,value} = await  productAddSchema.validate(req.body,{abortEarly: false});
         if(error){
-            logger.error('productValidationAddSchema ::  product data is invalid', eror.details);
+            logger.error('productValidationAddSchema ::  product data is invalid', error.details);
             return res.status(400).send({message:error.details});
         }
         logger.info('productValidationAddSchema ::  product data is valid', req.body);
@@ -151,7 +151,7 @@ const  productValidationUpdateSchema = async (req,res,next) =>{
     try {
         const {error,value} = await prodUpdateSchema.validate(req.body,{abortEarly: false});
         if(error){
-            logger.error('productValidationUpdateSchema ::  product data is invalid', eror.details);
+            logger.error('productValidationUpdateSchema ::  product data is invalid', error.details);
             return res.status(400).send({message:error.details});
         }
         logger.info('productValidationUpdateSchema ::  product data is valid', req.body);
