@@ -2,7 +2,7 @@ const Joi =  require('joi');
 const logger = require('./logger');
 
 const userSignUpSchema = Joi.object({
-    name : Joi.string().min(4).max(10).required(),
+    name : Joi.string().min(4).max(20).required(),
     email : Joi.string().email().required(),
     password : Joi.string().min(8).required(),
     phone : Joi.string().min(10).max(10).required(),
@@ -53,7 +53,7 @@ const userLoginValidationSchema = async (req,res,next) =>{
 }
 
 const addUserSchema = Joi.object({
-    name : Joi.string().min(4).max(10).required(),
+    name : Joi.string().min(4).max(20).required(),
     email : Joi.string().email().required(),
     password : Joi.string().min(8).required(),
     phone : Joi.string().min(10).max(10).required(),
@@ -81,7 +81,7 @@ const  userAddValidationSchema = async (req,res,next) =>{
 
 
 const updateUserSchema = Joi.object({
-    name : Joi.string().min(4).max(10).optional(),
+    name : Joi.string().min(4).max(20).optional(),
     email : Joi.string().email().optional(),
     password : Joi.string().min(8).optional(),
     phone : Joi.string().min(10).max(10).optional(),

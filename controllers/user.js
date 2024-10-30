@@ -69,7 +69,7 @@ const handleLogin = async (req,res) =>{
         const token = jwt.sign(
             {userID:user._id, email:user.email},
             process.env.JWT_SECRET,
-            { expiresIn: '1h' }
+            { expiresIn: '8h' }
         )
 
         // res.setHeader('Authorization',`Bearer ${token}`);
