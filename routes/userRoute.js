@@ -19,8 +19,6 @@ userRouter.get('/:id',authenticateToken,handleGetUserById);
 userRouter.put('/:id',userUpdateValidationSchema,authenticateToken,handleUpdateUserById);
 userRouter.post('/add',userAddValidationSchema,authenticateToken,handleAddUser);
 
-
-
 module.exports = userRouter
 
 

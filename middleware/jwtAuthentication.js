@@ -19,8 +19,8 @@ const authenticateToken = (req,res,next) => {
         logger.info("Request received",req.user);  
         next();
     } catch (error) {
-        logger.error('Invalid or expire Token'); 
-        res.status(401).json({message:"Invalid or expire Token"});
+        logger.error(`Invalid or expire Token ${error}`); 
+        res.status(401).json({message:`Invalid or expire Token ${error}`});
     }
 } 
 
