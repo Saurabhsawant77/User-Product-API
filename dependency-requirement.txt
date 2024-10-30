@@ -20,7 +20,6 @@ POST api/users                    -    add new user
 PUT  api/users/:id                -     update user by id
 GET api/users                       -     get all user
 GET api/users/:id                 -     get each user details
-GET api/products/:userId    -    get all products by user id
 
 -------------------------Product CRUD-----------------------------------
 
@@ -31,25 +30,27 @@ PUT api/products/:id                   -  update products by id
 DELETE api/products/:id            -   remove products by id
 GET api/products/published      -  find all published products
 GET api/products?name=           -  find all products by name
+GET api/products/:userId    -    get all products by user id
 
 
 
 
 PostMan Raw JSON
 
-http://localhost:3030/api/users/signup
+https://user-product-api-nb1x.onrender.com/api/users/signup
 {
     "name": "Saurabh",
-    "email": "Saurbh@example.com",
-    "password": "securePassword123",
-    "phone": "1234567890",
-    "address": "123 Main Street, Springfield, Vashi"
+    "email": "saurabhsawant@gmail.com",
+    "password": "12345678",
+    "phone": "8828357179",
+    "address": "Sector 20, Vashi"
 }
 
-http://localhost:3030/api/users/login
+
+https://user-product-api-nb1x.onrender.com/api/users/login
 
 {
-    "email": "Saurbh@example.com",
-    "password": "securePassword123",
+    "email": "----------------@gmail.com",
+    "password": "------------"
 }
 
