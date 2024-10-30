@@ -5,7 +5,7 @@ const userSignUpSchema = Joi.object({
     name : Joi.string().min(4).max(20).required(),
     email : Joi.string().email().required(),
     password : Joi.string().min(8).required(),
-    phone : Joi.string().min(10).max(10).required(),
+    phone : Joi.number().integer().min(1000000000).max(9999999999).required().message('Enter a valid 10-digit phone number.'),
     address : Joi.string(),
     createdBy: Joi.string().optional(),
     updatedBy: Joi.string().optional()
@@ -56,7 +56,7 @@ const addUserSchema = Joi.object({
     name : Joi.string().min(4).max(20).required(),
     email : Joi.string().email().required(),
     password : Joi.string().min(8).required(),
-    phone : Joi.string().min(10).max(10).required(),
+    phone : Joi.number().integer().min(1000000000).max(9999999999).required().message('Enter a valid 10-digit phone number.'),
     address : Joi.string(),
     createdBy: Joi.string().optional(),
     updatedBy: Joi.string().optional()
@@ -84,7 +84,7 @@ const updateUserSchema = Joi.object({
     name : Joi.string().min(4).max(20).optional(),
     email : Joi.string().email().optional(),
     password : Joi.string().min(8).optional(),
-    phone : Joi.string().min(10).max(10).optional(),
+    phone : Joi.number().integer().min(1000000000).max(9999999999).required().message('Enter a valid 10-digit phone number.'),
     address : Joi.string().optional(),
     createdBy: Joi.string().optional(),
     updatedBy: Joi.string().optional()
