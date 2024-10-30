@@ -5,17 +5,19 @@ const bcryptjs = require('bcryptjs');
 const mongoose = require('mongoose');
 const { upload } = require('../middleware/multer');
 const logger = require('../middleware/logger');
+const { productValidationAddSchema } = require('../middleware/joiValidation');
 
 
 
 
 const handleCreateProduct = async (req,res) =>{
-
+    
     try {
         if(!req.file){
-            logger.error('handleCreateProduct :: No image uploaded  req file -> ',req.file);
+            logger.error('handleCreateProduct :: No image uploaded');
             return res.status(400).json({message: 'No image uploaded'})
         }
+
         const {name,description,published,image,price,rating} = req.body;
         const newProduct = await Product({
             name,
@@ -29,12 +31,13 @@ const handleCreateProduct = async (req,res) =>{
             updatedBy : req.user.userID
 
         }).save();
+        const validate = await productValidationAddSchema;
         logger.info("handleCreateProduct :: Product added Successfully ");
         return res.status(200).json({message : "Product added Successfully"});
 
     } catch (error) {
         logger.error("handleCreateProduct :: Internal Server Error handleCreateProduct error -> ",error);
-        return res.status(500).json({message : "Internal Server Error handleCreateProduct"}); 
+        return res.status(500).json({message : `Internal Server Error handleCreateProduct ${error}`}); 
     }
 }
 
@@ -78,7 +81,10 @@ const handleUpdateProduct = async (req, res) => {
             logger.error("handleUpdateProduct :: Product ID not provided");
             return res.status(404).json({ message: "Product not found" });
         }
-
+        // console.log(req.file);
+        if(req.file){
+            req.body.image = req.file.path;
+        }
         const updatedProduct = await Product.findByIdAndUpdate(updateId, req.body, { new: true });
         console.log(req.body,"Request body");
         if (!updatedProduct) {

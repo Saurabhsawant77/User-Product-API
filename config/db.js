@@ -5,8 +5,6 @@ const logger = require('../middleware/logger');
 
 const connectMongoDB = async (url) =>{  
     return await mongoose.connect(url,{
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
         serverSelectionTimeoutMS: 30000, 
         socketTimeoutMS: 45000,
         retryWrites: true
