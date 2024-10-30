@@ -138,14 +138,14 @@ const productValidationAddSchema = async (req,res,next) =>{
     try {
         const {error,value} = await  productAddSchema.validate(req.body,{abortEarly: false});
         if(error){
-            logger.error('productValidationAddSchema ::  product data is invalid', error.details);
+            logger.error(`productValidationAddSchema ::  product data is invalid ${error.details}`);
             return res.status(400).send({message:error.details});
         }
         logger.info('productValidationAddSchema ::  product data is valid', req.body);
         req.body = value;
         next();
     } catch (error) {
-        logger.error('productValidationAddSchema ::  user data is invalid', req.body);
+        logger.error(`productValidationAddSchema ::  product data is invalid ${error.details}`);
         return  res.status(500).send({message:error.message});
     }
 }
