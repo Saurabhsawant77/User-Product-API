@@ -5,8 +5,12 @@ const { connectMongoDB } = require('./config/db');
 const userRouter  = require('./routes/userRoute');
 const { productRouter } = require('./routes/productRoute');
 const PORT = 3030;
+var cors = require('cors')
+
 
 const app = express();
+
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 
