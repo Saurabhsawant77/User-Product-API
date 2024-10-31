@@ -20,8 +20,7 @@ productRouter.get('/published/products',authenticateToken,handleGetPublishedProd
 productRouter.get('/searchProduct/product',authenticateToken,handleGetProductByName);
 
 
-module.exports ={
-    productRouter
-}
+module.exports = productRouter
+
 
 

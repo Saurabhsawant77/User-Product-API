@@ -10,7 +10,7 @@ const handleSignUp = async (req,res) =>{
         const {name, email, password, phone, address, createdBy, updatedBy} = req.body;
 
         //check user exist or not
-        console.log(name);
+        console.log("Name is " + name );
         const existingUser = await User.findOne({email});
         const  existingUser2 = await User.findOne({phone});
         console.log(existingUser);
