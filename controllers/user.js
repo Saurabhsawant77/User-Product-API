@@ -12,8 +12,9 @@ const handleSignUp = async (req,res) =>{
         //check user exist or not
         console.log(name);
         const existingUser = await User.findOne({email});
+        const  existingUser2 = await User.findOne({phone});
         console.log(existingUser);
-        if(existingUser){
+        if(existingUser || existingUser2){
             logger.error('User already exists',existingUser);
             return res.status(400).json({message: 'User already exists'});
         }
@@ -166,7 +167,6 @@ const handleUpdateUserById = async (req,res) =>{
             return res.status(404).json({message : "User not found"})
         }
         else{
-
             const updatedData = await User.findByIdAndUpdate(req.params.id,req.body); 
             logger.info('User Updated Successfully');
             return res.json({message : "success"});

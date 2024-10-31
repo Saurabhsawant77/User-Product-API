@@ -17,7 +17,7 @@ const handleCreateProduct = async (req,res) =>{
             logger.error('handleCreateProduct :: No image uploaded');
             return res.status(400).json({message: 'No image uploaded'})
         }
-
+        const validate = await productValidationAddSchema;
         const {name,description,published,image,price,rating} = req.body;
         const newProduct = await Product({
             name,
@@ -31,9 +31,8 @@ const handleCreateProduct = async (req,res) =>{
             updatedBy : req.user.userID
 
         }).save();
-        const validate = await productValidationAddSchema;
         logger.info("handleCreateProduct :: Product added Successfully ");
-        return res.status(200).json({message : "Product added Successfully"});
+        return res.status(200).json({message : "Product added Successfully",product : newProduct});
 
     } catch (error) {
         logger.error("handleCreateProduct :: Internal Server Error handleCreateProduct error -> ",error);

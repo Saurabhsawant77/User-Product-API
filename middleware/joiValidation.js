@@ -127,11 +127,8 @@ const productAddSchema = Joi.object({
     description: Joi.string().required(),
     userId: Joi.string().optional(),
     published: Joi.boolean().optional(),
-    image: Joi.string().required(),
     price: Joi.number().min(0).required(),
     rating: Joi.number().min(0).max(5).optional(),
-    createdBy: Joi.string().optional(),
-    updatedBy: Joi.string().optional()
 });
 
 const productValidationAddSchema = async (req,res,next) =>{
