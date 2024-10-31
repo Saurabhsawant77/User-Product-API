@@ -1,7 +1,7 @@
 const User = require('../models/userSchema');
 const  bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const logger = require('../middleware/logger');
+const { logger } = require("../wrapper/logger");
 
 
 const handleSignUp = async (req,res) =>{
