@@ -5,7 +5,7 @@ const bcryptjs = require('bcryptjs');
 const mongoose = require('mongoose');
 const { upload } = require('../middleware/multer');
 const logger = require('../middleware/logger');
-const { productValidationAddSchema } = require('../middleware/joiValidation');
+const { productValidationUpdateSchema,productValidationAddSchema } = require('../middleware/joiValidation');
 
 
 
@@ -80,7 +80,8 @@ const handleUpdateProduct = async (req, res) => {
             logger.error("handleUpdateProduct :: Product ID not provided");
             return res.status(404).json({ message: "Product not found" });
         }
-        // console.log(req.file);
+        const validate = await productValidationUpdateSchema;
+
         if(req.file){
             req.body.image = req.file.path;
         }
