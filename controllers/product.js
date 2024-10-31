@@ -42,7 +42,7 @@ const handleCreateProduct = async (req,res) =>{
 
 const handleGetAllProducts = async  (req,res) =>{
     try {
-        const allProduct = await Product.find({});
+        const allProduct = await Product.find({}); // it will be inside service product
         if(!allProduct){
         logger.error("handleGetAllProducts :: No Products Found");
         return res.status(400).json({message: 'No Products Found'});
@@ -108,7 +108,7 @@ const handleDeleteProduct = async (req,res) =>{
         }
         const deletedProduct = await Product.findByIdAndDelete(deleteId);
         logger.info("handleDeleteProduct :: Product Deleted Successfully by ID");
-        return res.status(200).json({message : "Product Deleted"});
+        return res.status(200).json({message : "Product Deleted",deletedProd : deletedProduct});
     } catch (error) {
         logger.error("handleDeleteProduct :: Internal Server Error handleDeleteProduct",error);
         return res.status(500).json({messgae : "Internal Server Error handleDeleteProduct"});
@@ -126,7 +126,7 @@ const handleGetProductByUserId = async (req,res) =>{
         }
         const productsByUserId = await Product.find({createdBy : userId});
         logger.info("handleGetProductByUserId :: Product fetched By User ID");
-        return res.status(200).json({message : "Products Fetched Successfully",productsByUserId});
+        return res.status(200).json({message : "Products Fetched Successfully",product : productsByUserId});
 
     } catch (error) {
         logger.error("Internal Server Error handleGetProductByUserId",error);
@@ -143,7 +143,7 @@ const handleGetPublishedProducts = async (req,res) =>{
         }
         const published = await Product.find({published : true});
         logger.info("handleGetPublishedProducts :: Published Products fetched ");
-        return res.status(200).json({message : "Published Products Fetched Successfully",published});
+        return res.status(200).json({message : "Published Products Fetched Successfully",publishedProd : published});
     } catch (error) {
         logger.error("handleGetPublishedProducts :: Internal Server Error handleGetPublishedProducts",error);
         return  res.status(500).json({message : "Internal Server Error handleGetPublishedProducts"});
@@ -169,8 +169,6 @@ const handleGetProductByName = async (req,res) =>{
         logger.error("handleGetProductByName :: Internal Server Error handleGetProductByName");
         return res.status(500).json({message : "Internal Server Error handleGetProductByName"})
     }
-
-
 
 }
 
