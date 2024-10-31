@@ -7,7 +7,7 @@ const { productRouter } = require("./routes/productRoute");
 const PORT = 3030;
 var cors = require("cors");
 
-console.log("hello");
+ 
 
 const app = express();
 
