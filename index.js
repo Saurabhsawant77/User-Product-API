@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const { connectMongoDB } = require('./config/db');
 const userRouter  = require('./routes/userRoute');
 const { productRouter } = require('./routes/productRoute');
+const mainRouter = require('./routes/index')
 const PORT = 3030;
 var cors = require('cors')
 
@@ -15,8 +16,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 
 
-app.use('/api/users',userRouter);
-app.use('/api/products',productRouter);
+app.use('/api',mainRouter);
+// app.use('/api',productRouter);
 
 
 //connection to MongoDB 
