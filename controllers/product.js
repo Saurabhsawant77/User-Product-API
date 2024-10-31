@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const { upload } = require('../middleware/multer');
 const logger = require('../middleware/logger');
 const { productValidationAddSchema } = require('../middleware/joiValidation');
+const {createProduct, getAllProducts, getProductById, updateProductById, deleteProductById, getProductsByUserId , getPublishedProducts, getProductByName } = require('../services/productService')
 
 
 
@@ -19,7 +20,7 @@ const handleCreateProduct = async (req,res) =>{
         }
         const validate = await productValidationAddSchema;
         const {name,description,published,image,price,rating} = req.body;
-        const newProduct = await Product({
+        const newProduct = await createProduct({
             name,
             description,
             userId :req.user.userID,
@@ -30,7 +31,7 @@ const handleCreateProduct = async (req,res) =>{
             createdBy : req.user.userID,
             updatedBy : req.user.userID
 
-        }).save();
+        });
         logger.info("handleCreateProduct :: Product added Successfully ");
         return res.status(200).json({message : "Product added Successfully",product : newProduct});
 
@@ -42,7 +43,7 @@ const handleCreateProduct = async (req,res) =>{
 
 const handleGetAllProducts = async  (req,res) =>{
     try {
-        const allProduct = await Product.find({}); // it will be inside service product
+        const allProduct = await getAllProducts(); 
         if(!allProduct){
         logger.error("handleGetAllProducts :: No Products Found");
         return res.status(400).json({message: 'No Products Found'});
@@ -58,7 +59,7 @@ const handleGetAllProducts = async  (req,res) =>{
 const handleGetProductById = async (req,res) =>{
     try {
         const  id = req.params.id;
-        const product = await Product.findById(id);
+        const product = await getProductById(id);
         
         if(!product){
             logger.error("handleGetProductById :: Product not found by ID");
@@ -84,7 +85,7 @@ const handleUpdateProduct = async (req, res) => {
         if(req.file){
             req.body.image = req.file.path;
         }
-        const updatedProduct = await Product.findByIdAndUpdate(updateId, req.body, { new: true });
+        const updatedProduct = await updateProductById(updateId, req.body);
         console.log(req.body,"Request body");
         if (!updatedProduct) {
             logger.error("handleUpdateProduct :: Product not found for ID");
@@ -106,7 +107,7 @@ const handleDeleteProduct = async (req,res) =>{
             logger.error("handleDeleteProduct :: Product not exist for ID");
             return res.status(404).json({message : "Product not found"});
         }
-        const deletedProduct = await Product.findByIdAndDelete(deleteId);
+        const deletedProduct = await deleteProductById(deleteId);
         logger.info("handleDeleteProduct :: Product Deleted Successfully by ID");
         return res.status(200).json({message : "Product Deleted",deletedProd : deletedProduct});
     } catch (error) {
@@ -124,7 +125,7 @@ const handleGetProductByUserId = async (req,res) =>{
             logger.error("Product with User not found");
             return res.status(404).json({message : "Product with User not found"});
         }
-        const productsByUserId = await Product.find({createdBy : userId});
+        const productsByUserId = await getProductsByUserId(userId); 
         logger.info("handleGetProductByUserId :: Product fetched By User ID");
         return res.status(200).json({message : "Products Fetched Successfully",product : productsByUserId});
 
@@ -141,7 +142,7 @@ const handleGetPublishedProducts = async (req,res) =>{
             logger.error("handleGetPublishedProducts :: Product not Published");
             return res.status(404).json({message : "Product not found"});
         }
-        const published = await Product.find({published : true});
+        const published = await getPublishedProducts();
         logger.info("handleGetPublishedProducts :: Published Products fetched ");
         return res.status(200).json({message : "Published Products Fetched Successfully",publishedProd : published});
     } catch (error) {
@@ -160,7 +161,7 @@ const handleGetProductByName = async (req,res) =>{
             return res.status(404).json({message : "Product not found"});
         }
         else{
-            const productByName = await Product.find({name : name});
+            const productByName = await getProductByName(name);
             logger.info("handleGetProductByName :: Products By Name fetched Successfully");
             return res.status(200).json({message : "Product Fetched Successfully",productByName});
         }
@@ -181,7 +182,6 @@ module.exports = {
     handleGetProductByUserId,
     handleGetPublishedProducts,
     handleGetProductByName
-
 }
 
 

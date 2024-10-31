@@ -2,6 +2,7 @@ const User = require('../models/userSchema');
 const  bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const logger = require('../middleware/logger');
+const {createUser, getAllUsers, getUserById, updateUserById, getUserByEmail} = require('../services/userService');
 
 
 const handleSignUp = async (req,res) =>{
@@ -19,12 +20,12 @@ const handleSignUp = async (req,res) =>{
             return res.status(400).json({message: 'User already exists'});
         }
 
-        const hashedPassword = await bcryptjs.hash(password,10);
+        // const hashedPassword = await bcryptjs.hash(password,10);
 
-        const newUser = await User.create({
+        const newUser = await createUser({
             name,
             email,
-            password: hashedPassword,
+            password,
             phone,
             address,
             createdBy,
@@ -35,7 +36,7 @@ const handleSignUp = async (req,res) =>{
         //     {userID:newUser._id, email:newUser.email},
         //     process.env.JWT_SECRET,
         //     { expiresIn: '1h' }
-        // );
+        // );   
         logger.info("handleSignUp :: User Created Successfullyy");
         return res.status(201).json({message : "User Created Successfully",user : newUser});
 
@@ -51,7 +52,7 @@ const handleLogin = async (req,res) =>{
 
         const {email,password} = req.body;
 
-        const user = await User.findOne({email});
+        const user = await getUserByEmail(email);
 
         if(!user){
             logger.error('handleSignUp :: Invalid Email or Password',user);
@@ -91,19 +92,19 @@ const handleAddUser = async (req,res) =>{
 
         //check user exist or not
         console.log(name);
-        const existingUser = await User.findOne({email});
+        const existingUser = await getUserByEmail(email);
         console.log(existingUser);
         if(existingUser){
             logger.error('User already exists');
             return res.status(400).json({message: 'User already exists'});
         }
 
-        const hashedPassword = await bcryptjs.hash(password,10);
+        // const hashedPassword = await bcryptjs.hash(password,10);
 
-        const newUser = await User.create({
+        const newUser = await createUser({
             name,
             email,
-            password: hashedPassword,
+            password,
             phone,
             address,
             createdBy : req.user.userID ,
@@ -119,7 +120,7 @@ const handleAddUser = async (req,res) =>{
 
 const handleGetAllUsers = async (req,res) =>{
     try{
-        const allUsers = await User.find({});
+        const allUsers = await getAllUsers();
         if(!allUsers){
             logger.error('handleGetAllUsers :: No users found');
             return res.status(404).json({message : "No users found"});
@@ -138,7 +139,7 @@ const handleGetUserById = async (req,res) =>{
 
     try {
         const id = req.params.id;
-        const user = await User.findById(id);
+        const user = await getUserById(id);
     
     
         if(!user){
@@ -161,13 +162,13 @@ const handleUpdateUserById = async (req,res) =>{
 
     try {
         const  id = req.params.id;
-        const updateUser = await User.findById(id);
+        const updateUser = await getUserById(id);
         if(!updateUser){
             logger.error('handleUpdateUserById :: User not found');
             return res.status(404).json({message : "User not found"})
         }
         else{
-            const updatedData = await User.findByIdAndUpdate(req.params.id,req.body,{new : true}); 
+            const updatedData = await updateUserById(id,req.body);
             logger.info('User Updated Successfully');
             return res.json({message : "success",updataedUser :updatedData});
         }
