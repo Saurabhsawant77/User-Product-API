@@ -37,12 +37,12 @@ const handleSignUp = async (req,res) =>{
         //     { expiresIn: '1h' }
         // );
         logger.info("handleSignUp :: User Created Successfullyy");
-        return res.status(201).json({message : "User Created Successfully"});
+        return res.status(201).json({message : "User Created Successfully",user : newUser});
 
     } catch (error) {
         console.log("Error in Signup",error);
-        logger.error('Internal server error handleSignUp');
-        return res.status(501).json({message: 'Internal server error'});
+        logger.error(`Internal server error ${error}`);
+        return res.status(501).json({message: `Internal server error ${error}`});
     }
 }
 
@@ -54,7 +54,7 @@ const handleLogin = async (req,res) =>{
         const user = await User.findOne({email});
 
         if(!user){
-            logger.error('Invalid Email or Password',user);
+            logger.error('handleSignUp :: Invalid Email or Password',user);
             return res.status(400).json({message : "Invalid Email or Password"});
         }
 
@@ -110,10 +110,10 @@ const handleAddUser = async (req,res) =>{
             updatedBy : req.user.userID
         });
         logger.info("handleAddUser :: User Added Successfully");
-        return res.status(201).json({message : "User Added Successfully"});
+        return res.status(201).json({message : "User Added Successfully",addedUser : newUser});
     } catch (error) {
-        logger.error('Internal server error handleAddUser',error);
-        return res.status(501).json({message: 'Internal server error handleAddUser'});
+        logger.error('handleAddUser :: Internal server error ',error);
+        return res.status(501).json({message: `Internal server error ${error}`});
     }
 } 
 
@@ -152,7 +152,7 @@ const handleGetUserById = async (req,res) =>{
     } catch (error) {
         console.log(error + " Error  in handleGetUserById");
         logger.error('handleGetUserById :: Internal server error',error);
-        return res.status(500).json({message : `Internal server error`});
+        return res.status(500).json({message : `Internal server error ${error}`});
     }
   
 }
@@ -167,15 +167,15 @@ const handleUpdateUserById = async (req,res) =>{
             return res.status(404).json({message : "User not found"})
         }
         else{
-            const updatedData = await User.findByIdAndUpdate(req.params.id,req.body); 
+            const updatedData = await User.findByIdAndUpdate(req.params.id,req.body,{new : true}); 
             logger.info('User Updated Successfully');
-            return res.json({message : "success"});
+            return res.json({message : "success",updataedUser :updatedData});
         }
         
     } catch (error) {
         // console.log(error + " Error in handleUpdateUserById");
         logger.error('handleUpdateUserById :: Internal server error',error);
-        return res.status(500).json({message : `Internal server error`});
+        return res.status(500).json({message : `Internal server error ${error}`});
     }
 
 }
