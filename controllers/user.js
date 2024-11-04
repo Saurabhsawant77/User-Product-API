@@ -85,7 +85,9 @@ const handleResetPassword = async (req, res) => {
       email,
     });
 
-    if (!user) return res.status(400).send("Invalid or expired token");
+    if (!user) {
+      return res.status(400).json({ message: "Invalid Email" });
+    }
 
     //Check old password is correct
     const isMatch = await bcryptjs.compare(oldPassword, user.password);
