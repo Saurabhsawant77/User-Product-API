@@ -5,6 +5,7 @@ const userRouter = require("./routes/userRoute");
 const { productRouter } = require("./routes/productRoute");
 const PORT = 3030;
 var cors = require("cors");
+const { authRouter } = require("./routes/authRouter");
 
 const app = express();
 
@@ -12,7 +13,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.use("/api/users", userRouter);
+//auth route
+app.use("/api/auth", authRouter);
+
+// app.use("/api/users", userRouter);
 app.use("/api/products", productRouter);
 
 //connection to MongoDB
