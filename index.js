@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const { connectMongoDB } = require("./config/db");
+const connectMongoDB  = require("./config/db");
 const userRouter = require("./routes/userRoute");
 const { productRouter } = require("./routes/productRoute");
 const PORT = 3030;

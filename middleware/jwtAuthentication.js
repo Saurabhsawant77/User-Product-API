@@ -1,7 +1,7 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
-const { logger } = require("../wrapper/logger");
+const logger = require("../wrapper/logger");
 
 const authenticateToken = (role = []) => {
   return (req, res, next) => {

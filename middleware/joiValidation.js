@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const { logger } = require("../wrapper/logger");
+const logger = require("../wrapper/logger");
 
 const userSignUpSchema = Joi.object({
   name: Joi.string().min(4).max(20).required(),

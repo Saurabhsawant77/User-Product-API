@@ -1,4 +1,4 @@
-const { logger } = require("../wrapper/logger");
+const logger = require("../wrapper/logger");
 const mongoose = require("mongoose");
 
 const connectMongoDB = async (url) => {
@@ -18,6 +18,4 @@ const connectMongoDB = async (url) => {
     });
 };
 
-module.exports = {
-  connectMongoDB,
-};
+module.exports = connectMongoDB;

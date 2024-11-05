@@ -1,7 +1,7 @@
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { logger } = require("../wrapper/logger");
-const { User } = require("../models/roleBaseModel");
+const logger  = require("../wrapper/logger");
+const User  = require("../models/roleBaseModel");
 
 const handleSignUp = async (req, res) => {
   console.log("inside handleSignUp");
