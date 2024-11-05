@@ -61,7 +61,7 @@ const handleLogin = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { userID: userExist._id, email: userExist.email },
+      { _id: userExist._id, role: userExist.role, email: userExist.email },
       process.env.JWT_SECRET,
       { expiresIn: "8h" }
     );
@@ -90,8 +90,15 @@ const handleResetPassword = async (req, res) => {
     }
 
     //Check old password is correct
-    const isMatch = await bcryptjs.compare(oldPassword, user.password);
-    if (!isMatch) return res.status(400).send("old password is incorrect");
+    const isPasswordValid = await bcryptjs.compare(
+      oldPassword,
+      userExist.password
+    );
+
+    if (!isPasswordValid) {
+      logger.error("Invalid Email or Password");
+      return res.status(400).json({ message: "Invalid Email or Password" });
+    }
 
     user.password = await bcryptjs.hash(newPassword, 10); // Hash the new password
 
@@ -105,11 +112,10 @@ const handleResetPassword = async (req, res) => {
 
 const handleAddUser = async (req, res) => {
   try {
-    const { name, email, password, phone, address, createdBy, updatedBy } =
-      req.body;
+    const { username, email, password, role, isActive } = req.body;
 
     //check user exist or not
-    console.log(name);
+
     const existingUser = await User.findOne({ email });
     console.log(existingUser);
     if (existingUser) {
@@ -119,14 +125,13 @@ const handleAddUser = async (req, res) => {
 
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-    const newUser = await User.create({
-      name,
+    const newUser = await User({
+      username,
       email,
       password: hashedPassword,
-      phone,
-      address,
-      createdBy: req.user.userID,
-      updatedBy: req.user.userID,
+      role: role || "customer_user",
+      isActive: isActive || true,
+      createdBy: req.user ? req.user._id : null,
     });
     logger.info("handleAddUser :: User Added Successfully");
     return res.status(201).json({ message: "User Added Successfully" });

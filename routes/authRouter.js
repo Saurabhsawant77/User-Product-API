@@ -4,6 +4,7 @@ const {
   handleLogin,
   handleResetPassword,
 } = require("../controllers/user");
+const authenticateToken = require("../middleware/jwtAuthentication");
 
 // const {
 //   userSignUpSchemaValidation,
@@ -16,7 +17,11 @@ const authRouter = express.Router();
 console.log("Inside auth router");
 authRouter.post("/signup", handleSignUp);
 authRouter.post("/login", handleLogin);
-authRouter.post("/reset-password", handleResetPassword);
+authRouter.post(
+  "/reset-password",
+  authenticateToken(["super_admin"]),
+  handleResetPassword
+);
 
 module.exports = {
   authRouter,
