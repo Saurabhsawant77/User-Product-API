@@ -24,6 +24,17 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
+    role: {
+        type: String,
+        default: "customer_user",
+        enum: ["super_admin", "admin_user", "partner_admin", "customer_user"],
+        required: true,
+      },
+      isActive: { type: Boolean, default: true },
+      profileImage: {
+        type: String,
+        default: "../images/default-profile-picture.jpg",
+      },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', 
