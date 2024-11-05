@@ -1,22 +1,20 @@
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { logger } = require("../wrapper/logger");
-const User = require("../models/roleBaseModel");
+const logger  = require("../wrapper/logger");
+const User  = require("../models/roleBaseModel");
 
-const handleSignUp = async (req,res) =>{
-    console.log("inside handle Signup")
-    try {
-        const {name, email, password, phone, address, createdBy, updatedBy} = req.body;
+const handleSignUp = async (req, res) => {
+  console.log("inside handleSignUp");
+  try {
+    const { username, email, password, role, isActive } = req.body;
 
-        //check user exist or not
-        console.log(name);
-        const existingUser = await User.findOne({email});
-        const  existingUser2 = await User.findOne({phone});
-        console.log(existingUser);
-        if(existingUser || existingUser2){
-            logger.error('User already exists',existingUser);
-            return res.status(400).json({message: 'User already exists'});
-        }
+    // Check if the user already exists
+    const userEmail = await User.findOne({ email });
+    if (userEmail) {
+      logger.error("User already exists", userEmail);
+      return res.status(400).json({ message: "User already exists" });
+    }
+
 
     // Hash the password
     const hashedPassword = await bcryptjs.hash(password, 10);
@@ -96,8 +94,14 @@ const handleResetPassword = async (req, res) => {
     //Check old password is correct
     const isPasswordValid = await bcryptjs.compare(
       oldPassword,
+
       user.password
     );
+
+    if (!isPasswordValid) {
+      logger.error("Invalid Email or Password");
+      return res.status(400).json({ message: "Invalid Email or Password" });
+    }
 
     if (!isPasswordValid) {
       logger.error("Invalid Email or Password");
@@ -117,11 +121,10 @@ const handleResetPassword = async (req, res) => {
 
 const handleAddUser = async (req, res) => {
   try {
-    const { name, email, password, phone, address, createdBy, updatedBy } =
-      req.body;
+    const { username, email, password, role, isActive } = req.body;
 
     //check user exist or not
-    console.log(name);
+
     const existingUser = await User.findOne({ email });
     console.log(existingUser);
     if (existingUser) {
@@ -131,22 +134,24 @@ const handleAddUser = async (req, res) => {
 
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-        const newUser = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-            phone,
-            address,
-            createdBy : req.user.userID ,
-            updatedBy : req.user.userID
-        });
-        logger.info("handleAddUser :: User Added Successfully");
-        return res.status(201).json({message : "User Added Successfully"});
-    } catch (error) {
-        logger.error('Internal server error handleAddUser',error);
-        return res.status(501).json({message: 'Internal server error handleAddUser'});
-    }
-} 
+
+    const newUser = await User({
+      username,
+      email,
+      password: hashedPassword,
+      role: role || "customer_user",
+      isActive: isActive || true,
+      createdBy: req.user ? req.user._id : null,
+    });
+    logger.info("handleAddUser :: User Added Successfully");
+    return res.status(201).json({ message: "User Added Successfully" });
+  } catch (error) {
+    logger.error("Internal server error handleAddUser", error);
+    return res
+      .status(501)
+      .json({ message: "Internal server error handleAddUser" });
+  }
+};
 
 const handleGetAllUsers = async (req, res) => {
   try {

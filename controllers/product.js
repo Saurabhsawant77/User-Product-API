@@ -1,9 +1,6 @@
-
 const Product = require('../models/productSchema');
-const logger = require('../wrapper/logger');
-const { productValidationAddSchema } = require('../middleware/joiValidation');
-
-
+const logger = require("../wrapper/logger");
+const { productValidationAddSchema } = require("../middleware/joiValidation");
 
 
 const handleCreateProduct = async (req, res) => {
