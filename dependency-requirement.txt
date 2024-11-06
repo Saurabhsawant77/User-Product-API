@@ -9,9 +9,9 @@ npm i nodemon                # Install Nodemon for keeping server up
 npm i bcryptjs               # Install bcryptjs to hash the password
 npm i multer                 # Install multer to store the images
 npm i winston-mongo          # Install winston-mongo to created logs and add it in mongoDB
+npm i nodemailer             # Install nodemailer to send email
 
-
-npm i express mongoose jsonwebtoken fs dotenv winston winston-mongodb nodemon bcryptjs multer winston-mongo
+npm i express mongoose jsonwebtoken fs dotenv winston winston-mongodb nodemon bcryptjs multer winston-mongo nodemailer
 
 
 -------------------------USER CRUD-------------------------------------

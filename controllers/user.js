@@ -3,121 +3,6 @@ const jwt = require("jsonwebtoken");
 const logger  = require("../wrapper/logger");
 const User  = require("../models/roleBaseModel");
 
-const handleSignUp = async (req, res) => {
-  console.log("inside handleSignUp");
-  try {
-    const { username, email, password, role, isActive } = req.body;
-
-    // Check if the user already exists
-    const userEmail = await User.findOne({ email });
-    if (userEmail) {
-      logger.error("User already exists", userEmail);
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-
-    // Hash the password
-    const hashedPassword = await bcryptjs.hash(password, 10);
-
-        const newUser = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-            phone,
-            address,
-            createdBy,
-            updatedBy
-        });
-
-        // const token = await jwt.sign(
-        //     {userID:newUser._id, email:newUser.email},
-        //     process.env.JWT_SECRET,
-        //     { expiresIn: '1h' }
-        // );
-        logger.info("handleSignUp :: User Created Successfullyy");
-        return res.status(201).json({message : "User Created Successfully"});
-
-    } catch (error) {
-        console.log("Error in Signup",error);
-        logger.error('Internal server error handleSignUp');
-        return res.status(501).json({message: 'Internal server error'});
-    }
-}
-
-const handleLogin = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const userExist = await User.findOne({ email });
-
-        if(!userExist){
-            logger.error('Invalid Email or Password');
-            return res.status(400).json({message : "Invalid Email or Password"});
-        }
-
-    //check password is valid or not
-
-      const isPasswordValid = await bcryptjs.compare(
-      password,
-      userExist.password
-    );
-
-    if (!isPasswordValid) {
-      logger.error("Invalid Email or Password");
-      return res.status(400).json({ message: "Invalid Email or Password" });
-    }
-
-    const token = jwt.sign(
-      { _id: userExist._id, role: userExist.role, email: userExist.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "8h" }
-    );
-
-    // res.setHeader('Authorization',`Bearer ${token}`);
-    logger.info("handleLogin :: UserLogged in Successfully");
-    res.status(200).json({ message: "Login Successfull", token });
-  } catch (error) {
-    console.error(error);
-    logger.error("handleLogin :: Internal server error");
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
-//reset password
-const handleResetPassword = async (req, res) => {
-  try {
-    const { email, oldPassword, newPassword } = req.body;
-    const user = await User.findOne({
-      email,
-    });
-
-    //Check old password is correct
-    const isPasswordValid = await bcryptjs.compare(
-      oldPassword,
-
-      user.password
-    );
-
-    if (!isPasswordValid) {
-      logger.error("Invalid Email or Password");
-      return res.status(400).json({ message: "Invalid Email or Password" });
-    }
-
-    if (!isPasswordValid) {
-      logger.error("Invalid Email or Password");
-      return res.status(400).json({ message: "Invalid Email or Password" });
-    }
-
-    user.password = await bcryptjs.hash(newPassword, 10); // Hash the new password
-    await user.save();
-
-    logger.info("handleResetPassword :: Password reset successful");
-    return res.status(200).json({ message: "Password reset successful" });
-  } catch (error) {
-    logger.error("handleResetPassword :: Internal server error");
-    res.status(500).json({ message: "Internal server error", error: error });
-  }
-};
 
 const handleAddUser = async (req, res) => {
   try {
@@ -153,7 +38,10 @@ const handleAddUser = async (req, res) => {
   }
 };
 
+
+
 const handleGetAllUsers = async (req, res) => {
+  console.log("Checking....")
   try {
     const allUsers = await User.find({});
     if (!allUsers) {
@@ -216,11 +104,8 @@ const handleUpdateUserById = async (req,res) =>{
 
 
 module.exports = {
-  handleLogin,
-  handleSignUp,
   handleGetAllUsers,
   handleGetUserById,
   handleUpdateUserById,
   handleAddUser,
-  handleResetPassword,
 };

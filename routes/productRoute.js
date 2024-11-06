@@ -21,49 +21,47 @@ const productRouter = express.Router();
 
 // Product Routes
 
-productRouter.get('/',authenticateToken,handleGetAllProducts);
-productRouter.get('/:id',authenticateToken,handleGetProductById);
-productRouter.post('/add',authenticateToken,upload.single('image'),handleCreateProduct);
-productRouter.put('/:id',authenticateToken,upload.single('image'),handleUpdateProduct);
-productRouter.delete('/:id',authenticateToken,handleDeleteProduct);
-productRouter.get('/find/:userId',authenticateToken,handleGetProductByUserId);
-productRouter.get('/published/products',authenticateToken,handleGetPublishedProducts);
-productRouter.get('/searchProduct/product',authenticateToken,handleGetProductByName);
+productRouter.get('/',authenticateToken(["customer_user"]),handleGetAllProducts);
+productRouter.get('/:id',authenticateToken(["customer_user"]),handleGetProductById);
+productRouter.post('/add',authenticateToken(["customer_user"]),upload.single('image'),handleCreateProduct);
+productRouter.put('/:id',authenticateToken(["customer_user"]),upload.single('image'),handleUpdateProduct);
+productRouter.delete('/:id',authenticateToken(["customer_user"]),handleDeleteProduct);
+productRouter.get('/find/:userId',authenticateToken(["customer_user"]),handleGetProductByUserId);
+productRouter.get('/published/products',authenticateToken(["customer_user"]),handleGetPublishedProducts);
+productRouter.get('/searchProduct/product',authenticateToken(["customer_user"]),handleGetProductByName);
 
 
 module.exports = productRouter
 
 
-productRouter.get("/", authenticateToken, handleGetAllProducts);
-productRouter.get("/:id", authenticateToken, handleGetProductById);
+productRouter.get("/", authenticateToken(["customer_user"]), handleGetAllProducts);
+productRouter.get("/:id", authenticateToken(["customer_user"]), handleGetProductById);
 productRouter.post(
   "/add",
-  authenticateToken,
+  authenticateToken(["customer_user"]),
   upload.single("image"),
   productValidationAddSchema,
   handleCreateProduct
 );
 productRouter.put(
   "/:id",
-  authenticateToken,
+  authenticateToken(["customer_user"]),
   upload.single("image"),
   productValidationUpdateSchema,
   handleUpdateProduct
 );
-productRouter.delete("/:id", authenticateToken, handleDeleteProduct);
-productRouter.get("/find/:userId", authenticateToken, handleGetProductByUserId);
+productRouter.delete("/:id", authenticateToken(["customer_user"]), handleDeleteProduct);
+productRouter.get("/find/:userId", authenticateToken(["customer_user"]), handleGetProductByUserId);
 productRouter.get(
   "/published/products",
-  authenticateToken,
+  authenticateToken(["customer_user"]),
   handleGetPublishedProducts
 );
 productRouter.get(
   "/searchProduct/product",
-  authenticateToken,
+  authenticateToken(["customer_user"]),
   handleGetProductByName
 );
 
-module.exports = {
-  productRouter,
-};
+module.exports = productRouter
 

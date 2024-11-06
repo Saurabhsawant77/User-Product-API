@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       default: "customer_user",
-      enum: ["super_admin", "admin_user", "partner_admin", "customer_user"],
+      enum: ["super_admin","admin", "partner", "customer_user"],
       required: true,
     },
     isActive: { type: Boolean, default: true },
@@ -27,6 +27,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "../images/default-profile-picture.jpg",
     },
+    // otp :{
+    //   type : String,
+    // },
+    // otpExpiry: {
+    //   type: Date, 
+    // },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User', 
