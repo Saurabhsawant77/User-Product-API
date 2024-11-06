@@ -1,10 +1,14 @@
 const express = require("express");
 const {
-  handleSignUp,
-  handleLogin,
-  handleResetPassword,
+  handleForgotPassword,
+  sendMailForgetPassword,
 } = require("../controllers/user");
 const authenticateToken = require("../middleware/jwtAuthentication");
+const {
+  handleAdminLogin,
+  handleLogin,
+  handleSignUp,
+} = require("../controllers/auth");
 
 // const {
 //   userSignUpSchemaValidation,
@@ -17,12 +21,22 @@ const authRouter = express.Router();
 console.log("Inside auth router");
 authRouter.post("/signup", handleSignUp);
 authRouter.post("/login", handleLogin);
-authRouter.post(
-  "/reset-password",
-  authenticateToken(["super_admin"]),
-  handleResetPassword
-);
+authRouter.post("/admin/login", handleAdminLogin);
+// authRouter.post(
+//   "/reset-password",
+//   authenticateToken(["super_admin"]),
+//   handleResetPassword
+// );
+// authRouter.post(
+//   "/forget-password/email/:token",
+//   authenticateToken(["super_admin"]),
+//   sendMailForgetPassword
+// );
 
-module.exports = {
-  authRouter,
-};
+// authRouter.post(
+//   "/forget-password/:userId/:token",
+//   authenticateToken(["super_admin"]),
+//   handleForgotPassword
+// );
+
+module.exports = authRouter;

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema(
+const customerSchema = new mongoose.Schema(
   {
     username: {
       type: String,
@@ -18,8 +18,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "customer_user",
-      enum: ["super_admin", "admin_user", "partner_admin", "customer_user"],
+      default: "customer",
+      enum: ["super_admin", "admin", "partner", "customer"],
       required: true,
     },
     isActive: { type: Boolean, default: true },
@@ -29,32 +29,28 @@ const userSchema = new mongoose.Schema(
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', 
-      required: false
+      ref: "User",
+      required: false,
     },
     updatedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: false
-    }
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: false,
+    },
   },
   { timestamps: true }
 );
 
-userSchema.pre('save', function(next) {
+customerSchema.pre("save", function (next) {
   if (!this.createdBy) {
-      this.createdBy = this._id; 
+    this.createdBy = this._id;
   }
   if (!this.updatedBy) {
-      this.updatedBy = this._id; 
+    this.updatedBy = this._id;
   }
   next();
 });
 
-const User = mongoose.model("User", userSchema);
+const Customer = mongoose.model("Customer", customerSchema);
 
-module.exports = User;
-
-
-module.exports = User;
-
+module.exports = Customer;

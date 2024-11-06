@@ -21,18 +21,34 @@ const productRouter = express.Router();
 
 // Product Routes
 
-productRouter.get('/',authenticateToken,handleGetAllProducts);
-productRouter.get('/:id',authenticateToken,handleGetProductById);
-productRouter.post('/add',authenticateToken,upload.single('image'),handleCreateProduct);
-productRouter.put('/:id',authenticateToken,upload.single('image'),handleUpdateProduct);
-productRouter.delete('/:id',authenticateToken,handleDeleteProduct);
-productRouter.get('/find/:userId',authenticateToken,handleGetProductByUserId);
-productRouter.get('/published/products',authenticateToken,handleGetPublishedProducts);
-productRouter.get('/searchProduct/product',authenticateToken,handleGetProductByName);
+productRouter.get("/", authenticateToken, handleGetAllProducts);
+productRouter.get("/:id", authenticateToken, handleGetProductById);
+productRouter.post(
+  "/add",
+  authenticateToken,
+  upload.single("image"),
+  handleCreateProduct
+);
+productRouter.put(
+  "/:id",
+  authenticateToken,
+  upload.single("image"),
+  handleUpdateProduct
+);
+productRouter.delete("/:id", authenticateToken, handleDeleteProduct);
+productRouter.get("/find/:userId", authenticateToken, handleGetProductByUserId);
+productRouter.get(
+  "/published/products",
+  authenticateToken,
+  handleGetPublishedProducts
+);
+productRouter.get(
+  "/searchProduct/product",
+  authenticateToken,
+  handleGetProductByName
+);
 
-
-module.exports = productRouter
-
+module.exports = productRouter;
 
 productRouter.get("/", authenticateToken, handleGetAllProducts);
 productRouter.get("/:id", authenticateToken, handleGetProductById);
@@ -63,7 +79,4 @@ productRouter.get(
   handleGetProductByName
 );
 
-module.exports = {
-  productRouter,
-};
-
+module.exports = productRouter;

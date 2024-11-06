@@ -10,6 +10,7 @@ const authenticateToken = (role = []) => {
 
     if (!token) {
       logger.error("Access denied", token);
+      console.log(token);
       return res.status(403).json({ message: "Access denied" });
     }
 
@@ -25,6 +26,7 @@ const authenticateToken = (role = []) => {
       // Check if users role
       if (!role.includes(req.user.role)) {
         logger.error("Access denied", role);
+        console.log(token, req.user);
         return res.status(403).json({ message: "Access denied" });
       }
 

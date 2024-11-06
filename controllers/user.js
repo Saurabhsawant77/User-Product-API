@@ -1,129 +1,71 @@
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const logger  = require("../wrapper/logger");
-const User  = require("../models/roleBaseModel");
+const logger = require("../wrapper/logger");
 
-const handleSignUp = async (req, res) => {
-  console.log("inside handleSignUp");
+const nodemailer = require("nodemailer");
+const User = require("../models/userSchema");
+const EnumtypeOfRole = require("../wrapper/enums");
+const { object } = require("joi");
+const Role = require("../models/roleSchema");
+
+const sendMailForgetPassword = async (req, res) => {
   try {
-    const { username, email, password, role, isActive } = req.body;
+    const { token } = req.params;
+    const transporter = await nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "navin.rajbhar@wybrid.com",
+        pass: "vwks ffdg sgzs hzrz",
+      },
+    });
 
-    // Check if the user already exists
-    const userEmail = await User.findOne({ email });
-    if (userEmail) {
-      logger.error("User already exists", userEmail);
-      return res.status(400).json({ message: "User already exists" });
-    }
+    const mailOptions = {
+      from: "rahul234@wybrid.com",
+      to: "navin22338@gmail.com",
+      subject: "Test Email from Nodemailer",
 
+      html: ` <a href="http://localhost:3030/api/auth/forget-password/${req.user._id}/${token}">http://localhost:3030/api/auth/forget-password/${req.user._id}/${token}</a>`,
+    };
 
-    // Hash the password
-    const hashedPassword = await bcryptjs.hash(password, 10);
-
-        const newUser = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-            phone,
-            address,
-            createdBy,
-            updatedBy
-        });
-
-        // const token = await jwt.sign(
-        //     {userID:newUser._id, email:newUser.email},
-        //     process.env.JWT_SECRET,
-        //     { expiresIn: '1h' }
-        // );
-        logger.info("handleSignUp :: User Created Successfullyy");
-        return res.status(201).json({message : "User Created Successfully"});
-
-    } catch (error) {
-        console.log("Error in Signup",error);
-        logger.error('Internal server error handleSignUp');
-        return res.status(501).json({message: 'Internal server error'});
-    }
-}
-
-const handleLogin = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    const userExist = await User.findOne({ email });
-
-        if(!userExist){
-            logger.error('Invalid Email or Password');
-            return res.status(400).json({message : "Invalid Email or Password"});
-        }
-
-    //check password is valid or not
-
-      const isPasswordValid = await bcryptjs.compare(
-      password,
-      userExist.password
-    );
-
-    if (!isPasswordValid) {
-      logger.error("Invalid Email or Password");
-      return res.status(400).json({ message: "Invalid Email or Password" });
-    }
-
-    const token = jwt.sign(
-      { _id: userExist._id, role: userExist.role, email: userExist.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "8h" }
-    );
-
-    // res.setHeader('Authorization',`Bearer ${token}`);
-    logger.info("handleLogin :: UserLogged in Successfully");
-    res.status(200).json({ message: "Login Successfull", token });
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error("Error:", error);
+      } else {
+        console.log("Email sent:", info.response);
+      }
+    });
+    return res.status(200).json({ message: "email send successful" });
   } catch (error) {
-    console.error(error);
-    logger.error("handleLogin :: Internal server error");
-    res.status(500).json({ message: "Internal server error" });
+    logger.error("sendMailForgetPassword :: Internal server error");
+    return res.status(200).json({ message: "error" });
   }
 };
 
-//reset password
-const handleResetPassword = async (req, res) => {
+//forget password
+const handleForgotPassword = async (req, res) => {
   try {
-    const { email, oldPassword, newPassword } = req.body;
-    const user = await User.findOne({
-      email,
-    });
+    const { newPassword } = req.body;
 
-    //Check old password is correct
-    const isPasswordValid = await bcryptjs.compare(
-      oldPassword,
+    const user = await User.findById(req.user._id);
+    console.log(user);
 
-      user.password
-    );
-
-    if (!isPasswordValid) {
-      logger.error("Invalid Email or Password");
-      return res.status(400).json({ message: "Invalid Email or Password" });
-    }
-
-    if (!isPasswordValid) {
-      logger.error("Invalid Email or Password");
-      return res.status(400).json({ message: "Invalid Email or Password" });
+    if (!user) {
+      logger.error("handleForgotPassword :: User not found");
+      return res.status(404).json({ message: "User not found" });
     }
 
     user.password = await bcryptjs.hash(newPassword, 10); // Hash the new password
     await user.save();
 
-    logger.info("handleResetPassword :: Password reset successful");
     return res.status(200).json({ message: "Password reset successful" });
   } catch (error) {
-    logger.error("handleResetPassword :: Internal server error");
     res.status(500).json({ message: "Internal server error", error: error });
   }
 };
 
-const handleAddUser = async (req, res) => {
+const handleAddAdminUser = async (req, res) => {
   try {
-    const { username, email, password, role, isActive } = req.body;
-
-    //check user exist or not
+    const { username, email, password, role } = req.body;
 
     const existingUser = await User.findOne({ email });
     console.log(existingUser);
@@ -134,22 +76,24 @@ const handleAddUser = async (req, res) => {
 
     const hashedPassword = await bcryptjs.hash(password, 10);
 
-
-    const newUser = await User({
+    const newUser = await User.create({
       username,
       email,
       password: hashedPassword,
-      role: role || "customer_user",
-      isActive: isActive || true,
-      createdBy: req.user ? req.user._id : null,
+      role: roleDocument._id,
     });
+    newUser.save();
     logger.info("handleAddUser :: User Added Successfully");
-    return res.status(201).json({ message: "User Added Successfully" });
+    console.log(newUser);
+
+    return res
+      .status(201)
+      .json({ message: "User Added Successfully", newUser: newUser });
   } catch (error) {
     logger.error("Internal server error handleAddUser", error);
     return res
       .status(501)
-      .json({ message: "Internal server error handleAddUser" });
+      .json({ message: "Internal server error handleAddUser", error: error });
   }
 };
 
@@ -168,59 +112,50 @@ const handleGetAllUsers = async (req, res) => {
   }
 };
 
-const handleGetUserById = async (req,res) =>{
+const handleGetUserById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await User.findById(id);
 
-    try {
-        const id = req.params.id;
-        const user = await User.findById(id);
-    
-    
-        if(!user){
-            logger.error('handleGetUserById :: User not found');
-            return res.status(404).json({message : "User not found"});
-        }
-        else{
-            logger.info('User Fetched Successfully');
-            return res.status(200).json(user);
-        }
-    } catch (error) {
-        console.log(error + " Error  in handleGetUserById");
-        logger.error('handleGetUserById :: Internal server error',error);
-        return res.status(500).json({message : `Internal server error`});
+    if (!user) {
+      logger.error("handleGetUserById :: User not found");
+      return res.status(404).json({ message: "User not found" });
+    } else {
+      logger.info("User Fetched Successfully");
+      return res.status(200).json(user);
     }
-  
-}
+  } catch (error) {
+    console.log(error + " Error  in handleGetUserById");
+    logger.error("handleGetUserById :: Internal server error", error);
+    return res.status(500).json({ message: `Internal server error` });
+  }
+};
 
-const handleUpdateUserById = async (req,res) =>{
-
-    try {
-        const  id = req.params.id;
-        const updateUser = await User.findById(id);
-        if(!updateUser){
-            logger.error('handleUpdateUserById :: User not found');
-            return res.status(404).json({message : "User not found"})
-        }
-        else{
-            const updatedData = await User.findByIdAndUpdate(req.params.id,req.body); 
-            logger.info('User Updated Successfully');
-            return res.json({message : "success"});
-        }
-        
-    } catch (error) {
-        // console.log(error + " Error in handleUpdateUserById");
-        logger.error('handleUpdateUserById :: Internal server error',error);
-        return res.status(500).json({message : `Internal server error`});
+const handleUpdateUserById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const updateUser = await User.findById(id);
+    if (!updateUser) {
+      logger.error("handleUpdateUserById :: User not found");
+      return res.status(404).json({ message: "User not found" });
+    } else {
+      const updatedData = await User.findByIdAndUpdate(req.params.id, req.body);
+      logger.info("User Updated Successfully");
+      return res.json({ message: "success" });
     }
-
-}
-
+  } catch (error) {
+    // console.log(error + " Error in handleUpdateUserById");
+    logger.error("handleUpdateUserById :: Internal server error", error);
+    return res.status(500).json({ message: `Internal server error` });
+  }
+};
 
 module.exports = {
-  handleLogin,
-  handleSignUp,
   handleGetAllUsers,
   handleGetUserById,
   handleUpdateUserById,
-  handleAddUser,
-  handleResetPassword,
+  handleAddAdminUser,
+
+  handleForgotPassword,
+  sendMailForgetPassword,
 };

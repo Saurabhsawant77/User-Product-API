@@ -1,11 +1,11 @@
 require("dotenv").config();
 const express = require("express");
-const connectMongoDB  = require("./config/db");
+const connectMongoDB = require("./config/db");
 const userRouter = require("./routes/userRoute");
-const { productRouter } = require("./routes/productRoute");
+const productRouter = require("./routes/productRoute");
 const PORT = 3030;
 var cors = require("cors");
-const { authRouter } = require("./routes/authRouter");
+const authRouter = require("./routes/authRouter");
 
 const app = express();
 
@@ -15,10 +15,8 @@ app.use(express.urlencoded({ extended: false }));
 
 //auth route
 app.use("/api/auth", authRouter);
-
-app.use('/api/users',userRouter);
-app.use('/api/products',productRouter);
-
+app.use("/api/users", userRouter);
+// app.use("/api/products", productRouter);
 
 //connection to MongoDB
 connectMongoDB(process.env.MONGODB_URL);
