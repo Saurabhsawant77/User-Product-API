@@ -133,6 +133,7 @@ const updateUserSchema = Joi.object({
 });
 
 const userUpdateValidationSchema = async (req, res, next) => {
+  console.log("userUpdateValidationSchema inside")
   try {
     const { error, value } = await updateUserSchema.validate(req.body, {
       abortEarly: false,

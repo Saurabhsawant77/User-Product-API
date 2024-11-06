@@ -57,7 +57,7 @@ const handleGetAllUsers = async (req, res) => {
 };
 
 const handleGetUserById = async (req,res) =>{
-
+  console.log("Inside handleGetUserById")
     try {
         const id = req.params.id;
         const user = await User.findById(id);
@@ -80,18 +80,21 @@ const handleGetUserById = async (req,res) =>{
 }
 
 const handleUpdateUserById = async (req,res) =>{
-
+  // console.log("updated by :: ");
     try {
         const  id = req.params.id;
+        const updatedBy = req.user._id;
+        // console.log(req.user._id + " :: ")
         const updateUser = await User.findById(id);
         if(!updateUser){
             logger.error('handleUpdateUserById :: User not found');
             return res.status(404).json({message : "User not found"})
         }
         else{
-            const updatedData = await User.findByIdAndUpdate(req.params.id,req.body); 
+            req.body.updatedBy = updatedBy;
+            const updatedData = await User.findByIdAndUpdate(req.params.id,req.body,{ new: true }); 
             logger.info('User Updated Successfully');
-            return res.json({message : "success"});
+            return res.status(200).json({message : "success",user:updatedData});
         }
         
     } catch (error) {
