@@ -42,7 +42,7 @@ const handleLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const userExist = await User.findOne({ email });
+    const userExist = await User.findOne({ email }).populate("role");
 
     if (!userExist) {
       logger.error("Invalid Email or Password");
@@ -62,7 +62,11 @@ const handleLogin = async (req, res) => {
     }
 
     const token = jwt.sign(
-      { _id: userExist._id, role: userExist.role, email: userExist.email },
+      {
+        _id: userExist._id,
+        role: userExist.role.role_name,
+        email: userExist.email,
+      },
       process.env.JWT_SECRET,
       { expiresIn: "8h" }
     );
@@ -77,34 +81,31 @@ const handleLogin = async (req, res) => {
   }
 };
 
-//admin login
-const handleAdminLogin = async (req, res) => {
-  try {
-    const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
+const handleSuperAdminLogin = async (req, res) => {
+  const { email, password } = req.body;
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
-    if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
+  try {
+    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
       logger.error("Invalid Email or Password");
       return res.status(400).json({ message: "Invalid Email or Password" });
     }
 
     const token = jwt.sign(
       {
-        _id: process.env.ADMIN_ID,
         email: ADMIN_EMAIL,
         role: EnumtypeOfRole.SUPER_ADMIN,
       },
-
       process.env.JWT_SECRET,
       { expiresIn: "8h" }
     );
 
-    // res.setHeader('Authorization',`Bearer ${token}`);
-    logger.info("handleLogin :: UserLogged in Successfully");
-    res.status(200).json({ message: "Login Successfull", token });
+    logger.info("handleSuperAdminLogin :: super admin Logged in Successfully");
+    res.status(200).json({ message: "Login Successful", token });
   } catch (error) {
     console.error(error);
-    logger.error("handleLogin :: Internal server error");
+    logger.error("handleSuperAdminLogin :: Internal server error");
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -146,5 +147,5 @@ module.exports = {
   handleSignUp,
   handleLogin,
   handleResetPassword,
-  handleAdminLogin,
+  handleSuperAdminLogin,
 };

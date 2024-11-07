@@ -1,12 +1,10 @@
 const bcryptjs = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+ 
 const logger = require("../wrapper/logger");
 
 const nodemailer = require("nodemailer");
 const User = require("../models/userSchema");
-const EnumtypeOfRole = require("../wrapper/enums");
-const { object } = require("joi");
-const Role = require("../models/roleSchema");
+ 
 
 const sendMailForgetPassword = async (req, res) => {
   try {

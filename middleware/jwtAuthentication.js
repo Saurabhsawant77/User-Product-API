@@ -9,7 +9,7 @@ const authenticateToken = (role = []) => {
     const token = authHeader;
 
     if (!token) {
-      logger.error("Access denied", token);
+      logger.error("Access denied ", token);
       console.log(token);
       return res.status(403).json({ message: "Access denied" });
     }
@@ -19,14 +19,10 @@ const authenticateToken = (role = []) => {
       req.user = decoded;
       logger.info("Request received", req.user);
 
-      //authenticateToken(["super_admin"])
-      //authenticateToken(["super_admin","admin_user"])
-      //authenticateToken(["partner_admin"])
-
       // Check if users role
       if (!role.includes(req.user.role)) {
-        logger.error("Access denied", role);
-        console.log(token, req.user);
+        logger.error("Access denied ", role);
+
         return res.status(403).json({ message: "Access denied" });
       }
 

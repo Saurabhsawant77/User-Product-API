@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const EnumtypeOfRole = require("../wrapper/enums");
 
 const roleSchema = new mongoose.Schema({
   _id: mongoose.Schema.Types.ObjectId,

@@ -13,7 +13,7 @@ const productSchema = mongoose.Schema(
     partner_id: {
       type: mongoose.Schema.Types.ObjectId,
       required: false,
-      ref: "User",
+      ref: "Partner",
     },
     published: {
       type: Boolean,

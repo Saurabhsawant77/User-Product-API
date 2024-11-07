@@ -1,11 +1,14 @@
-const express = require('express');
-const productRouter = require('./productRoute'); 
-const userRouter = require('./userRoute');       
+const express = require("express");
+const productRouter = require("./productRoute");
+const userRouter = require("./userRoute");
+const superAdminRouter = require("./superAdminRouter");
+const authRouter = require("./auth");
+const adminRouter = require("./adminRouter");
 
-const router = express.Router();
+const mainRouter = express.Router();
 
+// mainRouter.use("/admin",adminRouter)
+mainRouter.use("/auth", authRouter);
+// mainRouter.use("/super-admin", superAdminRouter);
 
-router.use('/products', productRouter); 
-router.use('/users', userRouter);       
-
-module.exports = router;
+module.exports = mainRouter;

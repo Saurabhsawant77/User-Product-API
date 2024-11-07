@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
-const userSchema = new mongoose.Schema(
+const customerSchema = new mongoose.Schema(
   {
-    username: {
+    name: {
       type: String,
       required: true,
       unique: true,
@@ -17,7 +17,8 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
     role: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Role",
       required: true,
     },
     isActive: { type: Boolean, default: true },
@@ -27,19 +28,19 @@ const userSchema = new mongoose.Schema(
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Role",
+      ref: "User",
       required: false,
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Role",
+      ref: "User",
       required: false,
     },
   },
   { timestamps: true }
 );
 
-userSchema.pre("save", function (next) {
+customerSchema.pre("save", function (next) {
   if (!this.createdBy) {
     this.createdBy = this._id;
   }
@@ -49,6 +50,6 @@ userSchema.pre("save", function (next) {
   next();
 });
 
-const User = mongoose.model("User", userSchema);
+const Customer = mongoose.model("Customer", customerSchema);
 
-module.exports = User;
+module.exports = Customer;

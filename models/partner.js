@@ -7,15 +7,23 @@ const partnerSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    owner_id: {
+    email: {
       type: String,
       required: true,
       unique: true,
     },
-    role: {
+    password: {
       type: String,
-      default: "customer",
-      enum: ["super_admin", "admin", "partner", "customer"],
+      required: true,
+    },
+    owner_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    role: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Role",
       required: true,
     },
     isActive: { type: Boolean, default: true },
@@ -26,26 +34,16 @@ const partnerSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: false,
+      required: true,
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: false,
+      required: true,
     },
   },
   { timestamps: true }
 );
-
-partnerSchema.pre("save", function (next) {
-  if (!this.createdBy) {
-    this.createdBy = this._id;
-  }
-  if (!this.updatedBy) {
-    this.updatedBy = this._id;
-  }
-  next();
-});
 
 const Partner = mongoose.model("Partner", partnerSchema);
 
