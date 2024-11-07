@@ -1,63 +1,51 @@
 const bcryptjs = require("bcryptjs");
- 
+
 const logger = require("../wrapper/logger");
 
 const nodemailer = require("nodemailer");
-const User = require("../models/userSchema");
- 
 
-const sendMailForgetPassword = async (req, res) => {
+const Role = require("../models/role");
+const { createUser } = require("../services/auth");
+const User = require("../models/user");
+const { getAllUsers } = require("../services/user");
+const EnumtypeOfRole = require("../wrapper/enums");
+
+const handleAddUser = async (req, res) => {
   try {
-    const { token } = req.params;
-    const transporter = await nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "navin.rajbhar@wybrid.com",
-        pass: "vwks ffdg sgzs hzrz",
-      },
-    });
+    const { username, email, password, role } = req.body;
 
-    const mailOptions = {
-      from: "rahul234@wybrid.com",
-      to: "navin22338@gmail.com",
-      subject: "Test Email from Nodemailer",
+    const roleDocument = await Role.findOne({ role_name: role });
+    console.log("roleDocument", roleDocument);
 
-      html: ` <a href="http://localhost:3030/api/auth/forget-password/${req.user._id}/${token}">http://localhost:3030/api/auth/forget-password/${req.user._id}/${token}</a>`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Error:", error);
-      } else {
-        console.log("Email sent:", info.response);
-      }
-    });
-    return res.status(200).json({ message: "email send successful" });
-  } catch (error) {
-    logger.error("sendMailForgetPassword :: Internal server error");
-    return res.status(200).json({ message: "error" });
-  }
-};
-
-//forget password
-const handleForgotPassword = async (req, res) => {
-  try {
-    const { newPassword } = req.body;
-
-    const user = await User.findById(req.user._id);
-    console.log(user);
-
-    if (!user) {
-      logger.error("handleForgotPassword :: User not found");
-      return res.status(404).json({ message: "User not found" });
+    if (!roleDocument) {
+      return res.status(400).json({ message: "Role not found" });
     }
 
-    user.password = await bcryptjs.hash(newPassword, 10); // Hash the new password
-    await user.save();
+    const existingUser = await User.findOne({ email });
 
-    return res.status(200).json({ message: "Password reset successful" });
+    console.log(existingUser);
+    if (existingUser) {
+      logger.error("User already exists", existingUser);
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const newUser = await createUser({
+      username,
+      email,
+      password,
+      role: roleDocument._id,
+      createdBy: req.user ? req.user._id : null,
+      updatedBy: req.user ? req.user._id : null,
+    });
+
+    logger.info("handleAddUser :: User Created Successfullyy");
+    return res
+      .status(201)
+      .json({ message: "admin Created Successfully", admin: newUser });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error", error: error });
+    console.log("Error in admin", error);
+    logger.error(`Internal server error ${error}`);
+    return res.status(501).json({ message: `Internal server error ${error}` });
   }
 };
 
@@ -95,9 +83,17 @@ const handleAddAdminUser = async (req, res) => {
   }
 };
 
-const handleGetAllUsers = async (req, res) => {
+const handleGetAllAdmin = async (req, res) => {
   try {
-    const allUsers = await User.find({});
+    const data = await getAllUsers();
+    console.log("data", data);
+
+    const allUsers = await data.filter(
+      (data, id) => data.role.role_name === EnumtypeOfRole.ADMIN
+    );
+
+    console.log("allUsers", allUsers);
+
     if (!allUsers) {
       logger.error("handleGetAllUsers :: No users found");
       return res.status(404).json({ message: "No users found" });
@@ -149,11 +145,9 @@ const handleUpdateUserById = async (req, res) => {
 };
 
 module.exports = {
-  handleGetAllUsers,
+  handleGetAllAdmin,
   handleGetUserById,
   handleUpdateUserById,
   handleAddAdminUser,
-
-  handleForgotPassword,
-  sendMailForgetPassword,
+  handleAddUser,
 };

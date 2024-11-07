@@ -1,4 +1,7 @@
-const User = require("../models/userSchema");
+const Role = require("../models/role");
+const User = require("../models/user");
+const { createUser, getUserByEmail } = require("../services/auth");
+
 const EnumtypeOfRole = require("../wrapper/enums");
 const logger = require("../wrapper/logger");
 const bcryptjs = require("bcryptjs");
@@ -6,34 +9,42 @@ const jwt = require("jsonwebtoken");
 
 //signup
 const handleSignUp = async (req, res) => {
-  console.log("inside handleSignUp");
+  console.log("inside handle Signup");
   try {
     const { username, email, password, role } = req.body;
 
-    // Check if the user already exists
-    const userEmail = await User.findOne({ email });
-    if (userEmail) {
-      logger.error("User already exists", userEmail);
+    const roleDocument = await Role.findOne({ role_name: role });
+    console.log("roleDocument", roleDocument);
+
+    if (!roleDocument) {
+      return res.status(400).json({ message: "Role not found" });
+    }
+
+    const existingUser = await User.findOne({ email });
+
+    console.log(existingUser);
+    if (existingUser) {
+      logger.error("User already exists", existingUser);
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Hash the password
-    const hashedPassword = await bcryptjs.hash(password, 10);
-
-    const newUser = await User.create({
+    const newUser = await createUser({
       username,
       email,
-      password: hashedPassword,
-      role,
+      password,
+      role: roleDocument._id,
+      createdBy: req.user ? req.user._id : null,
+      updatedBy: req.user ? req.user._id : null,
     });
-    newUser.save();
 
     logger.info("handleSignUp :: User Created Successfullyy");
-    return res.status(201).json({ message: "User Created Successfully" });
+    return res
+      .status(201)
+      .json({ message: "User Created Successfully", user: newUser });
   } catch (error) {
     console.log("Error in Signup", error);
-    logger.error("Internal server error handleSignUp");
-    return res.status(501).json({ message: "Internal server error" });
+    logger.error(`Internal server error ${error}`);
+    return res.status(501).json({ message: `Internal server error ${error}` });
   }
 };
 
@@ -42,7 +53,8 @@ const handleLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const userExist = await User.findOne({ email }).populate("role");
+    const userExist = await getUserByEmail(email);
+    console.log(userExist);
 
     if (!userExist) {
       logger.error("Invalid Email or Password");
@@ -81,43 +93,16 @@ const handleLogin = async (req, res) => {
   }
 };
 
-const handleSuperAdminLogin = async (req, res) => {
-  const { email, password } = req.body;
-  const ADMIN_EMAIL = process.env.ADMIN_EMAIL;
-  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
-
-  try {
-    if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
-      logger.error("Invalid Email or Password");
-      return res.status(400).json({ message: "Invalid Email or Password" });
-    }
-
-    const token = jwt.sign(
-      {
-        email: ADMIN_EMAIL,
-        role: EnumtypeOfRole.SUPER_ADMIN,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "8h" }
-    );
-
-    logger.info("handleSuperAdminLogin :: super admin Logged in Successfully");
-    res.status(200).json({ message: "Login Successful", token });
-  } catch (error) {
-    console.error(error);
-    logger.error("handleSuperAdminLogin :: Internal server error");
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
 //reset password
 const handleResetPassword = async (req, res) => {
   try {
     const { email } = req.user;
     const { oldPassword, newPassword } = req.body;
-    const user = await User.findOne({
-      email: email,
-    });
+    // const user = await User.findOne({
+    //   email: email,
+    // });
+
+    const user = await getUserByEmail(email);
 
     if (!user) {
       logger.error("Invalid User");
@@ -147,5 +132,4 @@ module.exports = {
   handleSignUp,
   handleLogin,
   handleResetPassword,
-  handleSuperAdminLogin,
 };

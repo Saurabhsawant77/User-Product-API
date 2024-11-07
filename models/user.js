@@ -29,16 +29,26 @@ const userSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
     },
   },
   { timestamps: true }
 );
+
+userSchema.pre("save", function (next) {
+  if (!this.createdBy) {
+    this.createdBy = this._id;
+  }
+  if (!this.updatedBy) {
+    this.updatedBy = this._id;
+  }
+  next();
+});
 
 const User = mongoose.model("User", userSchema);
 
