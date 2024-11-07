@@ -1,18 +1,16 @@
-const bcryptjs = require("bcryptjs");
-
 const logger = require("../wrapper/logger");
 
-const nodemailer = require("nodemailer");
-
 const Role = require("../models/role");
-const { createUser } = require("../services/auth");
+
 const User = require("../models/user");
-const { getAllUsers } = require("../services/user");
+const { createAdmin, getAllAdmin } = require("../services/user");
 const EnumtypeOfRole = require("../wrapper/enums");
 
-const handleAddUser = async (req, res) => {
+const handleAddAdmin = async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
+    console.log("Inside handle Add admin");
+    const { username, email, password, role, phone, address } = req.body;
+    console.log(phone, address);
 
     const roleDocument = await Role.findOne({ role_name: role });
     console.log("roleDocument", roleDocument);
@@ -29,14 +27,18 @@ const handleAddUser = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const newUser = await createUser({
+    const newUser = await createAdmin({
       username,
       email,
       password,
       role: roleDocument._id,
+      phone,
+      address,
       createdBy: req.user ? req.user._id : null,
       updatedBy: req.user ? req.user._id : null,
     });
+    newUser.save();
+    console.log(newUser);
 
     logger.info("handleAddUser :: User Created Successfullyy");
     return res
@@ -49,43 +51,9 @@ const handleAddUser = async (req, res) => {
   }
 };
 
-const handleAddAdminUser = async (req, res) => {
-  try {
-    const { username, email, password, role } = req.body;
-
-    const existingUser = await User.findOne({ email });
-    console.log(existingUser);
-    if (existingUser) {
-      logger.error("User already exists");
-      return res.status(400).json({ message: "User already exists" });
-    }
-
-    const hashedPassword = await bcryptjs.hash(password, 10);
-
-    const newUser = await User.create({
-      username,
-      email,
-      password: hashedPassword,
-      role: roleDocument._id,
-    });
-    newUser.save();
-    logger.info("handleAddUser :: User Added Successfully");
-    console.log(newUser);
-
-    return res
-      .status(201)
-      .json({ message: "User Added Successfully", newUser: newUser });
-  } catch (error) {
-    logger.error("Internal server error handleAddUser", error);
-    return res
-      .status(501)
-      .json({ message: "Internal server error handleAddUser", error: error });
-  }
-};
-
 const handleGetAllAdmin = async (req, res) => {
   try {
-    const data = await getAllUsers();
+    const data = await getAllAdmin();
     console.log("data", data);
 
     const allUsers = await data.filter(
@@ -148,6 +116,5 @@ module.exports = {
   handleGetAllAdmin,
   handleGetUserById,
   handleUpdateUserById,
-  handleAddAdminUser,
-  handleAddUser,
+  handleAddAdmin,
 };
