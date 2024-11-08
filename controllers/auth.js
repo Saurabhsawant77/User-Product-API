@@ -41,9 +41,10 @@ const handleSignUp = async (req, res) => {
     });
 
     logger.info("handleSignUp :: User Created Successfullyy");
-    return res
-      .status(201)
-      .json({ message: "User Created Successfully", user: newUser });
+    return res.status(201).json({
+      message: "User Created Successfully",
+      user: newUser,
+    });
   } catch (error) {
     console.log("Error in Signup", error);
     logger.error(`Internal server error ${error}`);
@@ -143,9 +144,9 @@ const handleResetPassword = async (req, res) => {
 //       return res.status(400).json({ message: "User not found" });
 //     }
 
-    // const otp = crypto.randomInt(100000, 999999).toString();
-    // const otpExpiry = Date.now() + 10 * 60 * 1000;
-    // await User.updateOne({ _id: user._id }, { otp, otpExpiry });
+// const otp = crypto.randomInt(100000, 999999).toString();
+// const otpExpiry = Date.now() + 10 * 60 * 1000;
+// await User.updateOne({ _id: user._id }, { otp, otpExpiry });
 
 //     const token = jwt.sign(
 //       { _id: user._id, role: user.role, email: user.email },
