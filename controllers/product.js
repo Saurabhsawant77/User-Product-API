@@ -1,6 +1,6 @@
-const Product = require("../models/productSchema");
 const logger = require("../wrapper/logger");
 const { productValidationAddSchema } = require("../middleware/joiValidation");
+const Product = require("../models/product");
 
 const handleCreateProduct = async (req, res) => {
   try {
@@ -9,17 +9,16 @@ const handleCreateProduct = async (req, res) => {
       return res.status(400).json({ message: "No image uploaded" });
     }
     const validate = await productValidationAddSchema;
-    const { name, description, published, image, price, rating } = req.body;
+    const { name, description, price, rating } = req.body;
     const newProduct = await Product({
       name,
       description,
-      userId: req.user.userID,
-      published,
+      partner_id: req.user._id,
       image: req.file.path,
       price,
       rating,
-      createdBy: req.user.userID,
-      updatedBy: req.user.userID,
+      createdBy: req.user._id,
+      updatedBy: req.user._id,
     }).save();
     logger.info("handleCreateProduct :: Product added Successfully ");
     return res
@@ -52,6 +51,29 @@ const handleGetAllProducts = async (req, res) => {
     return res
       .status(500)
       .json({ message: "Internal Server Error handleGetAllProducts" });
+  }
+};
+
+const handleGetAllProductsAddedByPartner = async (req, res) => {
+  try {
+    const allProduct = await Product.find({ createdBy: req.user._id });
+    if (!allProduct) {
+      logger.error("handleGetAllProductsAddedByPartner :: No Products Found");
+      return res.status(400).json({ message: "No Products Found" });
+    }
+    logger.info(
+      "handleGetAllProductsAddedByPartner :: Product fetched Successfully "
+    );
+    return res.status(200).json(allProduct);
+  } catch (error) {
+    logger.error(
+      "handleGetAllProductsAddedByPartner :: Internal Server Error handleGetAllProductsAddedByAdmin"
+    );
+    return res
+      .status(500)
+      .json({
+        message: "Internal Server Error handleGetAllProductsAddedByPartner",
+      });
   }
 };
 
@@ -209,4 +231,5 @@ module.exports = {
   handleGetProductByUserId,
   handleGetPublishedProducts,
   handleGetProductByName,
+  handleGetAllProductsAddedByPartner,
 };

@@ -13,9 +13,9 @@ const productSchema = mongoose.Schema(
     partner_id: {
       type: mongoose.Schema.Types.ObjectId,
       required: false,
-      ref: "Partner",
+      ref: "User",
     },
-    published: {
+    isVerified: {
       type: Boolean,
       default: false,
       required: false,
