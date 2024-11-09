@@ -5,7 +5,6 @@ const authenticateToken = require("../middleware/jwtAuthentication");
 const {
   handleAddPartner,
   handleGetAllPartnersAddedByAdmin,
-  handleGetAllPartner,
 } = require("../controllers/partner");
 
 const partnerRouter = express.Router();
@@ -22,10 +21,6 @@ partnerRouter.get(
   handleGetAllPartnersAddedByAdmin
 );
 
-partnerRouter.get(
-  "/all",
-  authenticateToken(["SUPER_ADMIN"]),
-  handleGetAllPartner
-);
+
 
 module.exports = partnerRouter;

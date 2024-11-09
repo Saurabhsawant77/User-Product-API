@@ -1,10 +1,10 @@
 const logger = require("../wrapper/logger");
-
 const Role = require("../models/role");
-
 const User = require("../models/user");
 const { createAdmin, getAllAdmin } = require("../services/user");
 const EnumtypeOfRole = require("../wrapper/enums");
+const { getAllPartner } = require("../services/partner");
+const { getAllCustomer } = require("../services/customer");
 
 const handleAddAdmin = async (req, res) => {
   try {
@@ -19,11 +19,13 @@ const handleAddAdmin = async (req, res) => {
       return res.status(400).json({ message: "Role not found" });
     }
 
-    const existingUser = await User.findOne({ email });
+    const existingUser1 = await User.findOne({ email });
+    const existingUser2 = await User.findOne({ phone });
+
 
     console.log(existingUser);
-    if (existingUser) {
-      logger.error("User already exists", existingUser);
+    if (existingUser1 || existingUser2) {
+      logger.error("User already exists", existingUser1 || existingUser2);
       return res.status(400).json({ message: "User already exists" });
     }
 
@@ -112,8 +114,56 @@ const handleUpdateUserById = async (req, res) => {
   }
 };
 
+const handleGetAllPartner = async (req, res) => {
+    try {
+      const data = await getAllPartner();
+      console.log("data", data);
+  
+      const allUsers = await data.filter(
+        (data, id) => data.role.role_name === EnumtypeOfRole.PARTNER
+      );
+  
+      console.log("allUsers", allUsers);
+  
+      if (!allUsers) {
+        logger.error("handleGetAllUsers :: No users found");
+        return res.status(404).json({ message: "No users found" });
+      }
+      logger.info("Users Fetched Successfully");
+      return res.status(200).json(allUsers);
+    } catch (error) {
+      logger.error("handleGetAllUsers :: Internal server error", error);
+      return res.status(500).json({ message: `Internal server error ${error}` });
+    }
+  };
+
+  const handleGetAllCustomer = async (req,res) => {
+    try {
+        const data = await getAllCustomer();
+        console.log("data", data);
+    
+        const allUsers = await data.filter(
+          (data, id) => data.role.role_name === EnumtypeOfRole.CUSTOMER
+        );
+    
+        console.log("allUsers", allUsers);
+    
+        if (!allUsers) {
+          logger.error("handleGetAllUsers :: No users found");
+          return res.status(404).json({ message: "No users found" });
+        }
+        logger.info("Users Fetched Successfully");
+        return res.status(200).json(allUsers);
+      } catch (error) {
+        logger.error("handleGetAllUsers :: Internal server error", error);
+        return res.status(500).json({ message: `Internal server error ${error}` });
+      }
+  }
+
 module.exports = {
   handleGetAllAdmin,
+  handleGetAllPartner,
+  handleGetAllCustomer,
   handleGetUserById,
   handleUpdateUserById,
   handleAddAdmin,
