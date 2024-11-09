@@ -21,7 +21,6 @@ authRouter.post(
 
 authRouter.post(
   "/verify-email",
-  authenticateToken(["SUPER_ADMIN", "ADMIN", "CUSTOMER", "PARTNER"]),
   verifyEmailForgetPassword
 );
 authRouter.post(
