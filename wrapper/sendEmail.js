@@ -3,33 +3,31 @@ const logger = require("./logger");
 
 const sendEmail = (user, token) => {
   const transporter = nodemailer.createTransport({
-    host: process.env.EMAIL_HOST,
-    port: process.env.EMAIL_PORT,
-
+    service: "gmail",
     auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
+      user: process.env.FROM_EMAIL,
+      pass: process.env.EMAIL_PASSKEY,
     },
   });
 
   //Define Email Options
   const url = `${process.env.FORGET_PASSWORD_URL}?token=${token}`;
-
-  const emailOptions = {
-    from: "saurabh.sawant@wybrid.com",
-    to: "saurabh.sawant@wybrid.com",
-    subject: "Forget Password",
-    html: `<a href="${url}"> <p> Click Here to Reset Pasword </p> </a>`,
+  const mailOptions = {
+    from: process.env.FROM_EMAIL,
+    to: `${user.email}`,
+    subject: "Forgot Password",
+    html: `Hello ${user.username}<a href="${url}"> <p> Click Here to Reset Pasword </p> </a>`,
   };
-
-  transporter.sendMail(emailOptions, function (error, info) {
+  
+  transporter.sendMail(mailOptions, (error, info) => {
     if (error) {
-      console.log(error);
-      logger.info(error);
+      console.error("Error:", error);
     } else {
-      logger.info("Email sent: " + info.response);
+      console.log("Email sent:", info.response);
     }
   });
+
+
 };
 
 module.exports = sendEmail;
