@@ -15,7 +15,7 @@ mainRouter.use("/auth", authRouter);
 mainRouter.use("/admin", userRouter);
 mainRouter.use("/role", roleRouter);
 mainRouter.use("/partner", partnerRouter);
-mainRouter.use("/product", productRouter);
+mainRouter.use("/products", productRouter);
 mainRouter.use("/customer",customerRouter)
 // mainRouter.use("/super-admin", superAdminRouter);
 

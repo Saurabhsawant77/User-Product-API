@@ -257,21 +257,21 @@ const handleGetProductByName = async (req, res) => {
       logger.error("handleGetProductByName :: Product not found");
       return res.status(404).json({ message: "Product not found" });
     } else {
-      const productByName = await Product.find({ name: name });
-      logger.info(
-        "handleGetProductByName :: Products By Name fetched Successfully"
-      );
-      return res
-        .status(200)
-        .json({ message: "Product Fetched Successfully", productByName });
+      const productByName = await Product.find({ name: name , isVerified : true});
+
+      if(!productByName.isVerified){
+        logger.error("handleGetProductByName :: Product not found");
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      logger.info("handleGetProductByName :: Products By Name fetched Successfully");
+      return res.status(200).json({ message: "Product Fetched Successfully", productByName });
     }
   } catch (error) {
     logger.error(
       "handleGetProductByName :: Internal Server Error handleGetProductByName"
     );
-    return res
-      .status(500)
-      .json({ message: "Internal Server Error handleGetProductByName" });
+    return res.status(500).json({ message: "Internal Server Error handleGetProductByName" });
   }
 };
 
