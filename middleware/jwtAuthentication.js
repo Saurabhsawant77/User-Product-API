@@ -9,9 +9,9 @@ const authenticateToken = (role = []) => {
     const token = authHeader;
 
     if (!token) {
-      logger.error("Access denied ", token);
+      logger.error("Access denied -- ", token);
       console.log(token);
-      return res.status(403).json({ message: "Access denied" });
+      return res.status(403).json({ message: "Access denied --" });
     }
 
     try {
@@ -20,10 +20,10 @@ const authenticateToken = (role = []) => {
       logger.info("Request received", req.user);
 
       // Check if users role
+      console.log(req.user)
       if (!role.includes(req.user.role)) {
-        logger.error("Access denied ", role);
-
-        return res.status(403).json({ message: "Access denied" });
+        logger.error("Access denied ++", role);
+        return res.status(403).json({ message: "Access denied ++" });
       }
 
       next();

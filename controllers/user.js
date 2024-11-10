@@ -22,8 +22,6 @@ const handleAddAdmin = async (req, res) => {
     const existingUser1 = await User.findOne({ email });
     const existingUser2 = await User.findOne({ phone });
 
-
-    console.log(existingUser);
     if (existingUser1 || existingUser2) {
       logger.error("User already exists", existingUser1 || existingUser2);
       return res.status(400).json({ message: "User already exists" });

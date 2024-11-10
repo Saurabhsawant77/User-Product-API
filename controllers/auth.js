@@ -135,6 +135,7 @@ const handleResetPassword = async (req, res) => {
 
 const verifyEmailForgetPassword = async (req, res) => {
   try {
+    console.log("Inside this");
     const { email } = req.body;
     if (!email) {
       logger.error("handleForgetPassword :: Email not found");
@@ -142,19 +143,15 @@ const verifyEmailForgetPassword = async (req, res) => {
     }
 
     console.log("handleForgetPassword :: ", req.body);
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email }).populate('role');
     console.log(user);
     if (!user) {
       logger.error("handleForgetPassword :: User not found");
       return res.status(400).json({ message: "User not found" });
     }
 
-const otp = crypto.randomInt(100000, 999999).toString();
-const otpExpiry = Date.now() + 10 * 60 * 1000;
-await User.updateOne({ _id: user._id }, { otp, otpExpiry });
-
     const token = jwt.sign(
-      { _id: user._id, role: user.role, email: user.email },
+      { _id: user._id, role: user.role.role_name, email: user.email },
       process.env.JWT_SECRET,
       { expiresIn: "8h" }
     );
@@ -168,6 +165,7 @@ await User.updateOne({ _id: user._id }, { otp, otpExpiry });
 
 const handleResetForgotPassword = async (req, res) => {
   try {
+    console.log("inside handleResetForgotPassword");
     const { email } = req.user;
     const { newPassword } = req.body;
     const user = await User.findOne({ email: email });
