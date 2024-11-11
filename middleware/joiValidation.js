@@ -116,6 +116,7 @@ const addUserSchema = Joi.object({
       "number.max": "Phone number cannot exceed 10 digits.",
       "any.required": "Phone number is required.",
     }),
+  role : Joi.string(),
   profileImage : Joi.string().uri().optional(),
   address: Joi.string(),
   createdBy: Joi.string().optional(),
