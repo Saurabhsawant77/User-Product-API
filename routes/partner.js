@@ -10,7 +10,7 @@ const partnerRouter = express.Router();
 
 
 partnerRouter.post("/add-product",authenticateToken(["PARTNER"]),upload.single("image"),productValidationAddSchema,handleCreateProduct);
-partnerRouter.put("/updateProduct",authenticateToken(["PARTNER"]),productValidationUpdateSchema,handleUpdateProduct);
+partnerRouter.put("/updateProduct/:updateId",authenticateToken(["PARTNER"]),productValidationUpdateSchema,handleUpdateProduct);
 partnerRouter.get("/",authenticateToken(["PARTNER"]),handleGetAllProductsAddedByPartner);
 
 
