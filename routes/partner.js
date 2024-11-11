@@ -3,24 +3,16 @@ const { upload } = require("../wrapper/multer");
 
 const authenticateToken = require("../middleware/jwtAuthentication");
 const {
-  handleAddPartner,
   handleGetAllPartnersAddedByAdmin,
 } = require("../controllers/partner");
+const { handleAddPartner } = require("../controllers/admin");
+const { handleUpdateProduct } = require("../controllers/product");
 
 const partnerRouter = express.Router();
 
-partnerRouter.post(
-  "/add",
-  upload.single("profileImage"),
-  authenticateToken(["ADMIN"]),
-  handleAddPartner
-);
-partnerRouter.get(
-  "/",
-  authenticateToken(["ADMIN"]),
-  handleGetAllPartnersAddedByAdmin
-);
 
+partnerRouter.get("/",authenticateToken(["ADMIN"]),handleGetAllPartnersAddedByAdmin);
+partnerRouter.put("/updateProduct",authenticateToken(["PARTNER"]),handleUpdateProduct);
 
 
 module.exports = partnerRouter;

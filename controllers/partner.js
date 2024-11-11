@@ -1,6 +1,7 @@
 const Partner = require("../models/partner");
 const Role = require("../models/role");
 const User = require("../models/user");
+const jwt = require("jsonwebtoken");
 const { createUser } = require("../services/auth");
 const {
   createPartner,
@@ -10,6 +11,7 @@ const {
 const { getAllAdmin } = require("../services/user");
 const EnumtypeOfRole = require("../wrapper/enums");
 const logger = require("../wrapper/logger");
+const sendCredentialEmail = require("../wrapper/sendCredentials");
 
 const handleAddPartner = async (req, res) => {
   try {
@@ -42,11 +44,18 @@ const handleAddPartner = async (req, res) => {
     });
     newUser.save();
     console.log(newUser);
+    const token = jwt.sign(
+      { _id: newUser._id, role: newUser.role.role_name, email: newUser.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "8h" }
+    );
+    console.log(newUser);
+    sendCredentialEmail(newUser,password,token);
 
     logger.info("handleAddPartner :: User Created Successfullyy");
     return res
       .status(201)
-      .json({ message: "Partner Created Successfully", admin: newUser });
+      .json({ message: "Partner Created Successfully",token :token, admin: newUser });
   } catch (error) {
     console.log("Error in Partner", error);
     logger.error(`Internal server error ${error}`);
