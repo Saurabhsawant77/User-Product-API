@@ -32,7 +32,7 @@ const createCart = async (req, cart, price, quantity, productId) => {
     return await cart.save();
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "server error", error });
+    return res.status(500).json({ message: "server error", error });
   }
 };
 
@@ -43,7 +43,7 @@ const getAllCarts = async (req, res) => {
     return allCarts;
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "server error", error });
+    return res.status(500).json({ message: "server error", error });
   }
 };
 
