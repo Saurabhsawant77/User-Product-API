@@ -8,10 +8,11 @@ const {
  
 } = require("../controllers/auth");
 const authenticateToken = require("../middleware/jwtAuthentication");
+const { userSignUpSchemaValidation } = require("../middleware/joiValidation");
 
 const authRouter = express.Router();
 
-authRouter.post("/signup", handleSignUp);
+authRouter.post("/signup",userSignUpSchemaValidation, handleSignUp);
 authRouter.post("/login", handleLogin);
 authRouter.post(
   "/reset-password",
