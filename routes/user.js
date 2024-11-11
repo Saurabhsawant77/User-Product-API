@@ -1,10 +1,17 @@
 const express = require("express");
-const { handleGetAllAdmin, handleAddAdmin } = require("../controllers/user");
+const { handleGetAllAdmin, handleAddAdmin, handleGetAllPartner, handleGetAllCustomer } = require("../controllers/user");
 const authenticateToken = require("../middleware/jwtAuthentication");
+const { upload } = require("../wrapper/multer");
+const { handleUpdateProduct, handleGetAllProducts, handleGetProductsToVerifyByAdmin } = require("../controllers/product");
 
 const userRouter = express.Router();
 
 userRouter.post("/add", authenticateToken(["SUPER_ADMIN"]), handleAddAdmin);
-userRouter.get("/", authenticateToken(["SUPER_ADMIN"]), handleGetAllAdmin);
+userRouter.get("/all-admins", authenticateToken(["SUPER_ADMIN"]), handleGetAllAdmin);
+userRouter.get("/all-partners",authenticateToken(["SUPER_ADMIN"]),handleGetAllPartner);
+userRouter.get("/all-products",authenticateToken(["SUPER_ADMIN"]),handleGetAllProducts);
+userRouter.get("/all-customers",authenticateToken(["SUPER_ADMIN"]),handleGetAllCustomer);
+userRouter.get("/verfyingproducts",authenticateToken(["ADMIN"]),handleGetProductsToVerifyByAdmin);
+userRouter.put("/verifyProduct/:id",upload.single("image"),authenticateToken(["ADMIN"]),handleUpdateProduct)
 
 module.exports = userRouter;

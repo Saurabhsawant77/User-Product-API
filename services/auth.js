@@ -18,5 +18,4 @@ const getUserByEmail = async (email) => {
 module.exports = {
   createUser,
   getUserByEmail,
-  
 };

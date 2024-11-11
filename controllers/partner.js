@@ -54,28 +54,7 @@ const handleAddPartner = async (req, res) => {
   }
 };
 
-const handleGetAllPartner = async (req, res) => {
-  try {
-    const data = await getAllPartner();
-    console.log("data", data);
 
-    const allUsers = await data.filter(
-      (data, id) => data.role.role_name === EnumtypeOfRole.PARTNER
-    );
-
-    console.log("allUsers", allUsers);
-
-    if (!allUsers) {
-      logger.error("handleGetAllUsers :: No users found");
-      return res.status(404).json({ message: "No users found" });
-    }
-    logger.info("Users Fetched Successfully");
-    return res.status(200).json(allUsers);
-  } catch (error) {
-    logger.error("handleGetAllUsers :: Internal server error", error);
-    return res.status(500).json({ message: `Internal server error ${error}` });
-  }
-};
 
 const handleGetAllPartnersAddedByAdmin = async (req, res) => {
   try {
@@ -95,7 +74,6 @@ const handleGetAllPartnersAddedByAdmin = async (req, res) => {
 };
 
 module.exports = {
-  handleGetAllPartner,
   handleAddPartner,
   handleGetAllPartnersAddedByAdmin,
 };

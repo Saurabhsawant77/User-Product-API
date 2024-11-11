@@ -1,6 +1,8 @@
 const logger = require("../wrapper/logger");
 const { productValidationAddSchema } = require("../middleware/joiValidation");
 const Product = require("../models/product");
+const Partner = require("../models/partner");
+const mongoose = require('mongoose');
 
 const handleCreateProduct = async (req, res) => {
   try {
@@ -129,6 +131,54 @@ const handleUpdateProduct = async (req, res) => {
   }
 };
 
+
+const handleGetProductsToVerifyByAdmin = async (req, res) => {
+  try {
+    const userId =new mongoose.Types.ObjectId(req.user._id);
+    const products = await Product.aggregate([
+      {
+        $lookup: {
+          from: 'users', 
+          localField: 'partner_id', 
+          foreignField: '_id', 
+          as: 'partner_details'
+        }
+      }, {
+        $unwind: '$partner_details'
+      }, {
+        $lookup: {
+          from: 'users', 
+          localField: 'partner_details.createdBy', 
+          foreignField: '_id', 
+          as: 'admin_details'
+        }
+      }, {
+        $unwind: '$admin_details'
+      }, {
+        $match: {
+          'admin_details._id': userId
+        }
+      }, {
+        $match: {
+          'isVerified': false
+        }
+      }
+    ])
+    console.log("products :: " ,products + " "+req.user._id);
+    if (products.length === 0) {
+      logger.error("handleGetProductsToVerifyByAdmin :: Products not found");
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    logger.info("handleGetProductsToVerifyByAdmin :: Product fetched successfully");
+    return res.status(200).json({ message: "Product fetched successfully", data: products });
+  } catch (error) {
+    console.log(error);
+    logger.error("handleGetProductsToVerifyByAdmin :: Error fetching product", error);
+    return res.status(500).json({ message: "Internal server error",error : error });
+  }
+};
+
 const handleDeleteProduct = async (req, res) => {
   try {
     const deleteId = req.params.id;
@@ -149,6 +199,9 @@ const handleDeleteProduct = async (req, res) => {
       .json({ messgae: "Internal Server Error handleDeleteProduct" });
   }
 };
+
+
+
 
 const handleGetProductByUserId = async (req, res) => {
   try {
@@ -179,7 +232,7 @@ const handleGetPublishedProducts = async (req, res) => {
       logger.error("handleGetPublishedProducts :: Product not Published");
       return res.status(404).json({ message: "Product not found" });
     }
-    const published = await Product.find({ published: true });
+    const published = await Product.find({ isVerified: true });
     logger.info("handleGetPublishedProducts :: Published Products fetched ");
     return res
       .status(200)
@@ -204,21 +257,21 @@ const handleGetProductByName = async (req, res) => {
       logger.error("handleGetProductByName :: Product not found");
       return res.status(404).json({ message: "Product not found" });
     } else {
-      const productByName = await Product.find({ name: name });
-      logger.info(
-        "handleGetProductByName :: Products By Name fetched Successfully"
-      );
-      return res
-        .status(200)
-        .json({ message: "Product Fetched Successfully", productByName });
+      const productByName = await Product.find({ name: name , isVerified : true});
+
+      if(!productByName.isVerified){
+        logger.error("handleGetProductByName :: Product not found");
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      logger.info("handleGetProductByName :: Products By Name fetched Successfully");
+      return res.status(200).json({ message: "Product Fetched Successfully", productByName });
     }
   } catch (error) {
     logger.error(
       "handleGetProductByName :: Internal Server Error handleGetProductByName"
     );
-    return res
-      .status(500)
-      .json({ message: "Internal Server Error handleGetProductByName" });
+    return res.status(500).json({ message: "Internal Server Error handleGetProductByName" });
   }
 };
 
@@ -232,4 +285,5 @@ module.exports = {
   handleGetPublishedProducts,
   handleGetProductByName,
   handleGetAllProductsAddedByPartner,
+  handleGetProductsToVerifyByAdmin
 };

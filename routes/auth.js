@@ -3,6 +3,8 @@ const {
   handleSignUp,
   handleLogin,
   handleResetPassword,
+  verifyEmailForgetPassword,
+  handleResetForgotPassword,
  
 } = require("../controllers/auth");
 const authenticateToken = require("../middleware/jwtAuthentication");
@@ -17,15 +19,14 @@ authRouter.post(
   handleResetPassword
 );
 
-// authRouter.post(
-//   "/verify-email",
-//   authenticateToken(["SUPER_ADMIN", "ADMIN", "CUSTOMER", "PARTNER"]),
-//   verifyEmailForgetPassword
-// );
-// authRouter.post(
-//   "/reset-forget-password",
-//   authenticateToken(["SUPER_ADMIN", "ADMIN", "CUSTOMER", "PARTNER"]),
-//   handleResetForgotPassword
-// );
+authRouter.post(
+  "/verify-email",
+  verifyEmailForgetPassword
+);
+authRouter.post(
+  "/reset-forget-password",
+  authenticateToken(["SUPER_ADMIN", "ADMIN", "CUSTOMER", "PARTNER"]),
+  handleResetForgotPassword
+);
 
 module.exports = authRouter;

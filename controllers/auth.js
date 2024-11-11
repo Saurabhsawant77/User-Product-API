@@ -12,7 +12,11 @@ const sendEmail = require("../wrapper/sendEmail");
 const handleSignUp = async (req, res) => {
   console.log("inside handle Signup");
   try {
-    const { username, email, password, role, phone, address } = req.body;
+    let { username, email, password, role, phone, address } = req.body;
+
+    if(role === undefined || !role){
+        role = EnumtypeOfRole.CUSTOMER;
+    }
 
     const roleDocument = await Role.findOne({ role_name: role });
     console.log("roleDocument", roleDocument);
@@ -21,11 +25,12 @@ const handleSignUp = async (req, res) => {
       return res.status(400).json({ message: "Role not found" });
     }
 
-    const existingUser = await User.findOne({ email });
+    const existingUser1 = await User.findOne({ email });
+    const existingUser2 = await User.findOne({ phone });
 
-    console.log(existingUser);
-    if (existingUser) {
-      logger.error("User already exists", existingUser);
+
+    if (existingUser1 || existingUser2) {
+      logger.error("User already exists", existingUser1 || existingUser2);
       return res.status(400).json({ message: "User already exists" });
     }
 
@@ -128,70 +133,68 @@ const handleResetPassword = async (req, res) => {
   }
 };
 
-// const verifyEmailForgetPassword = async (req, res) => {
-//   try {
-//     const { email } = req.body;
-//     if (!email) {
-//       logger.error("handleForgetPassword :: Email not found");
-//       return res.status(400).json({ message: "Email not found" });
-//     }
+const verifyEmailForgetPassword = async (req, res) => {
+  try {
+    console.log("Inside this");
+    const { email } = req.body;
+    if (!email) {
+      logger.error("handleForgetPassword :: Email not found");
+      return res.status(400).json({ message: "Email not found" });
+    }
 
-//     console.log("handleForgetPassword :: ", req.body);
-//     const user = await User.findOne({ email: email });
-//     console.log(user);
-//     if (!user) {
-//       logger.error("handleForgetPassword :: User not found");
-//       return res.status(400).json({ message: "User not found" });
-//     }
+    console.log("handleForgetPassword :: ", req.body);
+    const user = await User.findOne({ email: email }).populate('role');
+    console.log(user);
+    if (!user) {
+      logger.error("handleForgetPassword :: User not found");
+      return res.status(400).json({ message: "User not found" });
+    }
 
-// const otp = crypto.randomInt(100000, 999999).toString();
-// const otpExpiry = Date.now() + 10 * 60 * 1000;
-// await User.updateOne({ _id: user._id }, { otp, otpExpiry });
+    const token = jwt.sign(
+      { _id: user._id, role: user.role.role_name, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "8h" }
+    );
+    sendEmail(user, token);
 
-//     const token = jwt.sign(
-//       { _id: user._id, role: user.role, email: user.email },
-//       process.env.JWT_SECRET,
-//       { expiresIn: "8h" }
-//     );
-//     sendEmail(user, token);
+    return res.status(200).json({ message: "success", token: token });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-//     return res.status(200).json({ message: "success", token: token });
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+const handleResetForgotPassword = async (req, res) => {
+  try {
+    console.log("inside handleResetForgotPassword");
+    const { email } = req.user;
+    const { newPassword } = req.body;
+    const user = await User.findOne({ email: email });
+    console.log(user);
+    if (!user) {
+      logger.error("handleResetForgotPassword :: User not found");
+      return res.status(400).json({ message: "User not found" });
+    }
 
-// const handleResetForgotPassword = async (req, res) => {
-//   try {
-//     const { email } = req.user;
-//     const { newPassword } = req.body;
-//     const user = await User.findOne({ email: email });
-//     console.log(user);
-//     if (!user) {
-//       logger.error("handleResetForgotPassword :: User not found");
-//       return res.status(400).json({ message: "User not found" });
-//     }
+    // Hash the new password
+    const hashedResetForgotPassword = await bcryptjs.hash(newPassword, 10);
 
-//     // Hash the new password
-//     const hashedResetForgotPassword = await bcryptjs.hash(newPassword, 10);
+    await User.updateOne(
+      { _id: user._id },
+      { password: hashedResetForgotPassword, otp: null, otpExpiry: null }
+    );
 
-//     await User.updateOne(
-//       { _id: user._id },
-//       { password: hashedResetForgotPassword, otp: null, otpExpiry: null }
-//     );
-
-//     logger.info("handleResetForgotPassword :: Password reset successful");
-//     return res.status(200).json({ message: "Password reset successful" });
-//   } catch (error) {
-//     logger.error("handleResetForgotPassword :: Internal server error");
-//     res.status(500).json({ message: "Internal server error", error });
-//   }
-// };
+    logger.info("handleResetForgotPassword :: Password reset successful");
+    return res.status(200).json({ message: "Password reset successful" });
+  } catch (error) {
+    logger.error("handleResetForgotPassword :: Internal server error");
+    res.status(500).json({ message: "Internal server error", error });
+  }
+};
 
 module.exports = {
   handleSignUp,
   handleLogin,
   handleResetPassword,
-  // verifyEmailForgetPassword,
-  // handleResetForgotPassword,
+  verifyEmailForgetPassword,
+  handleResetForgotPassword,
 };
