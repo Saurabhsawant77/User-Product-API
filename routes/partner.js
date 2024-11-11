@@ -9,8 +9,8 @@ const { productValidationUpdateSchema, productValidationAddSchema } = require(".
 const partnerRouter = express.Router();
 
 
-partnerRouter.post("/add-product",productValidationAddSchema,upload.single("image"),authenticateToken(["PARTNER"]),handleCreateProduct);
-partnerRouter.put("/updateProduct",productValidationUpdateSchema,authenticateToken(["PARTNER"]),handleUpdateProduct);
+partnerRouter.post("/add-product",authenticateToken(["PARTNER"]),productValidationAddSchema,upload.single("image"),handleCreateProduct);
+partnerRouter.put("/updateProduct",authenticateToken(["PARTNER"]),productValidationUpdateSchema,handleUpdateProduct);
 partnerRouter.get("/",authenticateToken(["PARTNER"]),handleGetAllProductsAddedByPartner);
 
 
