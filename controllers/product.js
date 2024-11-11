@@ -102,7 +102,7 @@ const handleGetProductById = async (req, res) => {
 
 const handleUpdateProduct = async (req, res) => {
   try {
-    const updateId = req.params.id;
+    const updateId = req.params.updateId;
 
     if (!updateId) {
       logger.error("handleUpdateProduct :: Product ID not provided");
