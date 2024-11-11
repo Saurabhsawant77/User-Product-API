@@ -41,9 +41,7 @@ const handleAddAdmin = async (req, res) => {
     console.log(newUser);
 
     logger.info("handleAddUser :: User Created Successfullyy");
-    return res
-      .status(201)
-      .json({ message: "admin Created Successfully", admin: newUser });
+    return res.status(201).json({ message: "admin Created Successfully", admin: newUser });
   } catch (error) {
     console.log("Error in admin", error);
     logger.error(`Internal server error ${error}`);
