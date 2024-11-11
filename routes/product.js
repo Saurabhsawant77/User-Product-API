@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-  handleCreateProduct,
+  // handleCreateProduct,
   handleGetAllProducts,
   handleGetAllProductsAddedByPartner,
   handleUpdateProduct,
@@ -11,22 +11,22 @@ const authenticateToken = require("../middleware/jwtAuthentication");
 
 const productRouter = express.Router();
 
-productRouter.post(
-  "/add",
-  upload.single("image"),
-  authenticateToken(["PARTNER"]),
-  handleCreateProduct
-);
-productRouter.get(
-  "/all",
-  authenticateToken(["SUPER_ADMIN"]),
-  handleGetAllProducts
-);
-productRouter.get(
-  "/",
-  authenticateToken(["PARTNER"]),
-  handleGetAllProductsAddedByPartner
-);
+// productRouter.post(
+//   "/add",
+//   upload.single("image"),
+//   authenticateToken(["PARTNER"]),
+//   handleCreateProduct
+// );
+// productRouter.get(
+//   "/all",
+//   authenticateToken(["SUPER_ADMIN"]),
+//   handleGetAllProducts
+// );
+// productRouter.get(
+//   "/",
+//   authenticateToken(["PARTNER"]),
+//   handleGetAllProductsAddedByPartner
+// );
 // productRouter.get("/verfyingproducts",authenticateToken(["ADMIN"]),handleGetProductsToVerifyByAdmin);
-productRouter.put("/updateProduct/:id",upload.single("image"),authenticateToken(["PARTNER"]),handleUpdateProduct)
+// productRouter.put("/updateProduct/:id",upload.single("image"),authenticateToken(["PARTNER"]),handleUpdateProduct)
 module.exports = productRouter;
