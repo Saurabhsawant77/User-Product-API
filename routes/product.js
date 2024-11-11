@@ -15,6 +15,7 @@ productRouter.post(
   "/add",
   upload.single("image"),
   authenticateToken(["PARTNER"]),
+
   handleCreateProduct
 );
 productRouter.get(
@@ -28,5 +29,10 @@ productRouter.get(
   handleGetAllProductsAddedByPartner
 );
 // productRouter.get("/verfyingproducts",authenticateToken(["ADMIN"]),handleGetProductsToVerifyByAdmin);
-productRouter.put("/updateProduct/:id",upload.single("image"),authenticateToken(["PARTNER"]),handleUpdateProduct)
+productRouter.put(
+  "/updateProduct/:id",
+  upload.single("image"),
+  authenticateToken(["PARTNER"]),
+  handleUpdateProduct
+);
 module.exports = productRouter;

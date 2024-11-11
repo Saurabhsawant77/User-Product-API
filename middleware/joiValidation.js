@@ -2,7 +2,7 @@ const Joi = require("joi");
 const logger = require("../wrapper/logger");
 
 const userSignUpSchema = Joi.object({
-  name: Joi.string().min(4).max(20).required(),
+  username: Joi.string().min(4).max(20).required(),
   email: Joi.string().email().required(),
   password: Joi.string().min(8).required(),
   phone: Joi.number()
@@ -16,6 +16,7 @@ const userSignUpSchema = Joi.object({
       "number.max": "Phone number cannot exceed 10 digits.",
       "any.required": "Phone number is required.",
     }),
+  role : Joi.string(),
   address: Joi.string(),
   createdBy: Joi.string().optional(),
   updatedBy: Joi.string().optional(),
@@ -158,7 +159,7 @@ const productAddSchema = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().required(),
   image: Joi.string().optional(),
-  published: Joi.boolean().optional(),
+  isVerified: Joi.boolean().optional(),
   price: Joi.number().integer().min(0).required(),
   rating: Joi.number().integer().min(1).max(5).required(),
 
@@ -233,3 +234,4 @@ module.exports = {
   productValidationAddSchema,
   productValidationUpdateSchema,
 };
+  

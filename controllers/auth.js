@@ -93,7 +93,7 @@ const handleLogin = async (req, res) => {
 
     // res.setHeader('Authorization',`Bearer ${token}`);
     logger.info("handleLogin :: UserLogged in Successfully");
-    res.status(200).json({ message: "Login Successfull", token });
+    res.status(200).json({ message: "Login Successfull", token , user:userExist });
   } catch (error) {
     console.error(error);
     logger.error("handleLogin :: Internal server error");
@@ -156,7 +156,7 @@ const verifyEmailForgetPassword = async (req, res) => {
     );
     sendEmail(user, token);
 
-    return res.status(200).json({ message: "success", token: token });
+    return res.status(200).json({ message: "success", token: token , user : user});
   } catch (error) {
     console.log(error);
   }

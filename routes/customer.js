@@ -1,10 +1,32 @@
-const express = require('express');
-const {handleGetPublishedProducts, handleGetProductByName } = require('../controllers/product');
-const authenticateToken = require('../middleware/jwtAuthentication');
+const express = require("express");
+const {
+  handleGetPublishedProducts,
+  handleGetProductByName,
+} = require("../controllers/product");
+const authenticateToken = require("../middleware/jwtAuthentication");
+const { handleAddToCart, handleGetAllCarts } = require("../controllers/cart");
 
 const customerRouter = express.Router();
 
+customerRouter.get(
+  "/products",
+  authenticateToken(["CUSTOMER"]),
+  handleGetPublishedProducts
+);
+customerRouter.get(
+  "/search",
+  authenticateToken(["CUSTOMER"]),
+  handleGetProductByName
+);
+customerRouter.post(
+  "/add-to-cart",
+  authenticateToken(["CUSTOMER"]),
+  handleAddToCart
+);
+customerRouter.get(
+  "/get-all-carts",
+  authenticateToken(["CUSTOMER"]),
+  handleGetAllCarts
+);
 
-customerRouter.get("/products",authenticateToken(["CUSTOMER"]),handleGetPublishedProducts);
-customerRouter.get("/search",authenticateToken(["CUSTOMER"]),handleGetProductByName);
 module.exports = customerRouter;

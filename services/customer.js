@@ -4,7 +4,7 @@ const User = require("../models/user");
 
 const createCustomer = async (userData) => {
   const hashedPassword = await bcryptjs.hash(userData.password, 10);
-  const newUser = new Partner({
+  const newUser = new User({
     ...userData,
     password: hashedPassword,
   });
