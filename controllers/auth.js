@@ -14,8 +14,8 @@ const handleSignUp = async (req, res) => {
   try {
     let { username, email, password, role, phone, address } = req.body;
 
-    if(role === undefined || !role){
-        role = EnumtypeOfRole.CUSTOMER;
+    if (role === undefined || !role) {
+      role = EnumtypeOfRole.CUSTOMER;
     }
 
     const roleDocument = await Role.findOne({ role_name: role });
@@ -27,7 +27,6 @@ const handleSignUp = async (req, res) => {
 
     const existingUser1 = await User.findOne({ email });
     const existingUser2 = await User.findOne({ phone });
-
 
     if (existingUser1 || existingUser2) {
       logger.error("User already exists", existingUser1 || existingUser2);
@@ -143,7 +142,7 @@ const verifyEmailForgetPassword = async (req, res) => {
     }
 
     console.log("handleForgetPassword :: ", req.body);
-    const user = await User.findOne({ email: email }).populate('role');
+    const user = await User.findOne({ email: email }).populate("role");
     console.log(user);
     if (!user) {
       logger.error("handleForgetPassword :: User not found");
