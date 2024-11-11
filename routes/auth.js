@@ -14,9 +14,7 @@ const authRouter = express.Router();
 
 authRouter.post("/signup",userSignUpSchemaValidation, handleSignUp);
 authRouter.post("/login",userLoginValidationSchema, handleLogin);
-authRouter.post("/reset-password",resetPasswordSchemaValidation,authenticateToken(["SUPER_ADMIN", "ADMIN", "CUSTOMER", "PARTNER"]),
-  handleResetPassword
-);
+authRouter.post("/reset-password",authenticateToken(["SUPER_ADMIN", "ADMIN", "CUSTOMER", "PARTNER"]),resetPasswordSchemaValidation,handleResetPassword);
 
 authRouter.post(
   "/verify-email",
@@ -26,8 +24,8 @@ authRouter.post(
 
 authRouter.post(
   "/reset-forget-password",
-  resetForgetPasswordSchemaValidation,
   authenticateToken(["SUPER_ADMIN", "ADMIN", "CUSTOMER", "PARTNER"]),
+  resetForgetPasswordSchemaValidation,
   handleResetForgotPassword
 );
 

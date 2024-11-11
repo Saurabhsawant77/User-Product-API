@@ -103,19 +103,19 @@ const handleGetProductById = async (req, res) => {
 const handleUpdateProduct = async (req, res) => {
   try {
     const updateId = req.params.updateId;
-
+    console.log(updateId + "-----");
     if (!updateId) {
       logger.error("handleUpdateProduct :: Product ID not provided");
       return res.status(404).json({ message: "Product not found" });
     }
-    // console.log(req.file);
+    console.log(req.file);
     if (req.file) {
       req.body.image = req.file.path;
     }
+    console.log(req.body, "Request body");
     const updatedProduct = await Product.findByIdAndUpdate(updateId, req.body, {
       new: true,
     });
-    console.log(req.body, "Request body");
     if (!updatedProduct) {
       logger.error("handleUpdateProduct :: Product not found for ID");
       return res.status(404).json({ message: "Product not found for ID" });
@@ -254,15 +254,11 @@ const handleGetProductByName = async (req, res) => {
     const { name } = req.query;
 
     if (!name) {
-      logger.error("handleGetProductByName :: Product not found");
-      return res.status(404).json({ message: "Product not found" });
+      logger.error("handleGetProductByName :: Product not found" + name);
+      return res.status(404).json({ message: "Product not found++++" });
     } else {
       const productByName = await Product.find({ name: name , isVerified : true});
-
-      if(!productByName.isVerified){
-        logger.error("handleGetProductByName :: Product not found");
-        return res.status(404).json({ message: "Product not found" });
-      }
+      console.log(productByName);
 
       logger.info("handleGetProductByName :: Products By Name fetched Successfully");
       return res.status(200).json({ message: "Product Fetched Successfully", productByName });
