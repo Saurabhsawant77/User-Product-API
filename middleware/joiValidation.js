@@ -16,7 +16,7 @@ const userSignUpSchema = Joi.object({
       "number.max": "Phone number cannot exceed 10 digits.",
       "any.required": "Phone number is required.",
     }),
-  role : Joi.string(),
+  role: Joi.string(),
   address: Joi.string(),
   createdBy: Joi.string().optional(),
   updatedBy: Joi.string().optional(),
@@ -155,14 +155,12 @@ const userUpdateValidationSchema = async (req, res, next) => {
 };
 
 const productAddSchema = Joi.object({
-
   name: Joi.string().required(),
   description: Joi.string().required(),
   image: Joi.string().optional(),
   isVerified: Joi.boolean().optional(),
   price: Joi.number().integer().min(0).required(),
   rating: Joi.number().integer().min(1).max(5).required(),
-
 });
 
 const productValidationAddSchema = async (req, res, next) => {
@@ -226,6 +224,35 @@ const productValidationUpdateSchema = async (req, res, next) => {
   }
 };
 
+const addToCartSchema = Joi.object({
+  product_id: Joi.string().required(),
+  quantity: Joi.number().integer().min(1).required(),
+});
+
+const addToCartSchemaValidation = async (req, res, next) => {
+  try {
+    const { error, value } = await addToCartSchema.validate(req.body, {
+      abortEarly: false,
+    });
+
+    if (error) {
+      logger.error(
+        "addToCartSchemaValidation ::  add to cart data is invalid",
+        error.details
+      );
+    }
+
+    req.body = value;
+    next();
+  } catch (error) {
+    logger.error(
+      "addToCartSchemaValidation ::  add to cart data is invalid",
+      req.body
+    );
+    return res.status(500).send({ message: error.message });
+  }
+};
+
 module.exports = {
   userSignUpSchemaValidation,
   userLoginValidationSchema,
@@ -233,5 +260,5 @@ module.exports = {
   userUpdateValidationSchema,
   productValidationAddSchema,
   productValidationUpdateSchema,
+  addToCartSchemaValidation,
 };
-  

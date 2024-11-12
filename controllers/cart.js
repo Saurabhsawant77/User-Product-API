@@ -7,6 +7,12 @@ const handleAddToCart = async (req, res) => {
   try {
     const { productId, quantity } = req.body;
 
+    //if quantity 0 then return Invalid quantity
+    if (quantity === 0) {
+      logger.error("Invalid quantity");
+      return res.status(404).json({ message: "Invalid quantity" });
+    }
+
     //Check if product exists
     const product = await Product.findOne({ _id: productId });
     if (!product) {
@@ -15,13 +21,10 @@ const handleAddToCart = async (req, res) => {
 
     const price = product.price;
 
-    // Find the customer's cart
+    // Find the customer cart
     const cart = await Cart.findOne({ customer_id: req.user._id });
-
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
-    }
-
+   
+    //pass data in create service
     const carts = await createCart(req, cart, price, quantity, productId);
     logger.info("handleAddToCart :: Cart added Successfully ");
     return res
