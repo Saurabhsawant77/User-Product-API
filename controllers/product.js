@@ -262,7 +262,7 @@ const handleGetProductByName = async (req, res) => {
       logger.error("handleGetProductByName :: Product not found" + name);
       return res.status(404).json({ message: "Product not found++++" });
     } else {
-      const productByName = await Product.find({ name: name , isVerified : true , createdBy : req.user._id});
+      const productByName = await Product.find({ name: name , isVerified : true });
       console.log(productByName);
 
       if(productByName.length ===0 || !productByName){
