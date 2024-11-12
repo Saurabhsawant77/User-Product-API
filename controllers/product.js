@@ -2,7 +2,8 @@ const logger = require("../wrapper/logger");
 const { productValidationAddSchema } = require("../middleware/joiValidation");
 const Product = require("../models/product");
 const Partner = require("../models/partner");
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+const { populate } = require("../models/role");
 
 const handleCreateProduct = async (req, res) => {
   try {
@@ -10,13 +11,14 @@ const handleCreateProduct = async (req, res) => {
       logger.error("handleCreateProduct :: No image uploaded");
       return res.status(400).json({ message: "No image uploaded" });
     }
+
     const validate = await productValidationAddSchema;
     const { name, description, price, rating } = req.body;
     const newProduct = await Product({
       name,
       description,
       partner_id: req.user._id,
-      image: req.file.path,
+      image: `/uploads/images/${req.file.filename}`,
       price,
       rating,
       createdBy: req.user._id,
@@ -71,11 +73,9 @@ const handleGetAllProductsAddedByPartner = async (req, res) => {
     logger.error(
       "handleGetAllProductsAddedByPartner :: Internal Server Error handleGetAllProductsAddedByAdmin"
     );
-    return res
-      .status(500)
-      .json({
-        message: "Internal Server Error handleGetAllProductsAddedByPartner",
-      });
+    return res.status(500).json({
+      message: "Internal Server Error handleGetAllProductsAddedByPartner",
+    });
   }
 };
 
@@ -131,51 +131,64 @@ const handleUpdateProduct = async (req, res) => {
   }
 };
 
-
 const handleGetProductsToVerifyByAdmin = async (req, res) => {
   try {
-    const userId =new mongoose.Types.ObjectId(req.user._id);
+    const userId = new mongoose.Types.ObjectId(req.user._id);
     const products = await Product.aggregate([
       {
         $lookup: {
-          from: 'users', 
-          localField: 'partner_id', 
-          foreignField: '_id', 
-          as: 'partner_details'
-        }
-      }, {
-        $unwind: '$partner_details'
-      }, {
+          from: "users",
+          localField: "partner_id",
+          foreignField: "_id",
+          as: "partner_details",
+        },
+      },
+      {
+        $unwind: "$partner_details",
+      },
+      {
         $lookup: {
-          from: 'users', 
-          localField: 'partner_details.createdBy', 
-          foreignField: '_id', 
-          as: 'admin_details'
-        }
-      }, {
-        $unwind: '$admin_details'
-      }, {
+          from: "users",
+          localField: "partner_details.createdBy",
+          foreignField: "_id",
+          as: "admin_details",
+        },
+      },
+      {
+        $unwind: "$admin_details",
+      },
+      {
         $match: {
-          'admin_details._id': userId
-        }
-      }, {
+          "admin_details._id": userId,
+        },
+      },
+      {
         $match: {
-          'isVerified': false
-        }
-      }
-    ])
-    console.log("products :: " ,products + " "+req.user._id);
+          isVerified: false,
+        },
+      },
+    ]);
+    console.log("products :: ", products + " " + req.user._id);
     if (products.length === 0) {
       logger.error("handleGetProductsToVerifyByAdmin :: Products not found");
       return res.status(404).json({ message: "Product not found" });
     }
 
-    logger.info("handleGetProductsToVerifyByAdmin :: Product fetched successfully");
-    return res.status(200).json({ message: "Product fetched successfully", data: products });
+    logger.info(
+      "handleGetProductsToVerifyByAdmin :: Product fetched successfully"
+    );
+    return res
+      .status(200)
+      .json({ message: "Product fetched successfully", data: products });
   } catch (error) {
     console.log(error);
-    logger.error("handleGetProductsToVerifyByAdmin :: Error fetching product", error);
-    return res.status(500).json({ message: "Internal server error",error : error });
+    logger.error(
+      "handleGetProductsToVerifyByAdmin :: Error fetching product",
+      error
+    );
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error });
   }
 };
 
@@ -200,9 +213,6 @@ const handleDeleteProduct = async (req, res) => {
       .json({ messgae: "Internal Server Error handleDeleteProduct" });
   }
 };
-
-
-
 
 const handleGetProductByUserId = async (req, res) => {
   try {
@@ -258,22 +268,29 @@ const handleGetProductByName = async (req, res) => {
       logger.error("handleGetProductByName :: Product not found" + name);
       return res.status(404).json({ message: "Product not found++++" });
     } else {
+
       const productByName = await Product.find({ name: name , isVerified : true , createdBy : req.user._id});
       console.log(productByName);
 
       if(productByName.length ===0 || !productByName){
-        logger.error("handleGetProductByName :: Product not found" + name);
+        logger.error("handleGetProductByName :: Product not found" );
         return res.status(404).json({ message: "Product not found" });
       }
 
-      logger.info("handleGetProductByName :: Products By Name fetched Successfully");
-      return res.status(200).json({ message: "Product Fetched Successfully", productByName });
+      logger.info(
+        "handleGetProductByName :: Products By Name fetched Successfully"
+      );
+      return res
+        .status(200)
+        .json({ message: "Product Fetched Successfully", productByName });
     }
   } catch (error) {
     logger.error(
       "handleGetProductByName :: Internal Server Error handleGetProductByName"
     );
-    return res.status(500).json({ message: "Internal Server Error handleGetProductByName" });
+    return res
+      .status(500)
+      .json({ message: "Internal Server Error handleGetProductByName" });
   }
 };
 
@@ -287,5 +304,5 @@ module.exports = {
   handleGetPublishedProducts,
   handleGetProductByName,
   handleGetAllProductsAddedByPartner,
-  handleGetProductsToVerifyByAdmin
+  handleGetProductsToVerifyByAdmin,
 };
