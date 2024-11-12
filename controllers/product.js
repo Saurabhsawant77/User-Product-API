@@ -24,7 +24,7 @@ const handleCreateProduct = async (req, res) => {
       createdBy: req.user._id,
       updatedBy: req.user._id,
     }).save();
-    logger.info("handleCreateProduct :: Product added Successfully ");
+    logger.info("handleCreateProduct ::: Product added Successfully ");
     return res
       .status(200)
       .json({ message: "Product added Successfully", product: newProduct });
