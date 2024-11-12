@@ -16,7 +16,7 @@ const userSignUpSchema = Joi.object({
       "number.max": "Phone number cannot exceed 10 digits.",
       "any.required": "Phone number is required.",
     }),
-  role : Joi.string(),
+  role: Joi.string(),
   address: Joi.string(),
   createdBy: Joi.string().optional(),
   updatedBy: Joi.string().optional(),
@@ -73,16 +73,16 @@ const userLoginValidationSchema = async (req, res, next) => {
 };
 
 const verifyUserEmail = Joi.object({
-  email : Joi.string().email().required()
-})
+  email: Joi.string().email().required(),
+});
 
-const verifyUserEmailValidation = async (req,res,next) =>{
+const verifyUserEmailValidation = async (req, res, next) => {
   try {
     const { error, value } = await verifyUserEmail.validate(req.body, {
       abortEarly: false,
     });
 
-    if(error){
+    if (error) {
       logger.error(
         "verifyUserEmailValidation ::  user email is invalid",
         error.details
@@ -99,7 +99,7 @@ const verifyUserEmailValidation = async (req,res,next) =>{
     );
     return res.status(500).send({ message: error.message });
   }
-}
+};
 
 const addUserSchema = Joi.object({
   username: Joi.string().max(20).required(),
@@ -116,8 +116,8 @@ const addUserSchema = Joi.object({
       "number.max": "Phone number cannot exceed 10 digits.",
       "any.required": "Phone number is required.",
     }),
-  role : Joi.string(),
-  profileImage : Joi.string().uri().optional(),
+  role: Joi.string(),
+  profileImage: Joi.string().uri().optional(),
   address: Joi.string(),
   createdBy: Joi.string().optional(),
   updatedBy: Joi.string().optional(),
@@ -159,7 +159,7 @@ const updateUserSchema = Joi.object({
       "number.max": "Phone number cannot exceed 10 digits.",
       "any.required": "Phone number is required.",
     }),
-  profileImage : Joi.string().uri().optional(),
+  profileImage: Joi.string().uri().optional(),
   address: Joi.string().optional(),
   createdBy: Joi.string().optional(),
   updatedBy: Joi.string().optional(),
@@ -187,14 +187,12 @@ const userUpdateValidationSchema = async (req, res, next) => {
 };
 
 const productAddSchema = Joi.object({
-
   name: Joi.string().required(),
   description: Joi.string().required(),
   image: Joi.string().optional(),
   isVerified: Joi.boolean().optional(),
   price: Joi.number().integer().min(0).required(),
   rating: Joi.number().integer().min(1).max(5).required(),
-
 });
 
 const productValidationAddSchema = async (req, res, next) => {
@@ -258,22 +256,60 @@ const productValidationUpdateSchema = async (req, res, next) => {
   }
 };
 
+const addToCartSchema = Joi.object({
+  product_id: Joi.string().required(),
+  quantity: Joi.number().integer().min(1).required(),
+});
 
-const resetForgetPasswordSchema = Joi.object({
-  newPassword : Joi.string().min(8).required(),
-})
-
-const resetForgetPasswordSchemaValidation = async (req,res,next) => {
+const addToCartSchemaValidation = async (req, res, next) => {
   try {
-    const { error, value } = await resetForgetPasswordSchema.validate(req.body, {
+    const { error, value } = await addToCartSchema.validate(req.body, {
       abortEarly: false,
     });
 
-    if(error){
-      logger.error("resetForgetPasswordSchemaValidation ::  user data is invalid", error.details)
-      return res.status(400).send({message:error.details})
+    if (error) {
+      logger.error(
+        "addToCartSchemaValidation ::  add to cart data is invalid",
+        error.details
+      );
     }
-    logger.info("resetForgetPasswordSchemaValidation ::  user data is valid", req.body);
+  } catch (error) {
+    logger.error(
+      "addToCartSchemaValidation ::  add to cart data is invalid",
+      error.details
+    );
+    return res
+      .status(500)
+      .json({
+        message: "addToCartSchemaValidation ::  add to cart data is invalid",
+      });
+  }
+};
+
+const resetForgetPasswordSchema = Joi.object({
+  newPassword: Joi.string().min(8).required(),
+});
+
+const resetForgetPasswordSchemaValidation = async (req, res, next) => {
+  try {
+    const { error, value } = await resetForgetPasswordSchema.validate(
+      req.body,
+      {
+        abortEarly: false,
+      }
+    );
+
+    if (error) {
+      logger.error(
+        "resetForgetPasswordSchemaValidation ::  user data is invalid",
+        error.details
+      );
+      return res.status(400).send({ message: error.details });
+    }
+    logger.info(
+      "resetForgetPasswordSchemaValidation ::  user data is valid",
+      req.body
+    );
     req.body = value;
     next();
   } catch (error) {
@@ -283,24 +319,30 @@ const resetForgetPasswordSchemaValidation = async (req,res,next) => {
     );
     return res.status(500).send({ message: error.message });
   }
-}
+};
 
 const resetPasswordSchema = Joi.object({
-  oldPassword : Joi.string().min(8).required(),
-  newPassword : Joi.string().min(8).required(),
-})
+  oldPassword: Joi.string().min(8).required(),
+  newPassword: Joi.string().min(8).required(),
+});
 
-const resetPasswordSchemaValidation = async (req,res,next) => {
+const resetPasswordSchemaValidation = async (req, res, next) => {
   try {
     const { error, value } = await resetPasswordSchema.validate(req.body, {
       abortEarly: false,
     });
 
-    if(error){
-      logger.error("resetPasswordSchemaValidation ::  user data is invalid", error.details)
-      return res.status(400).send({message:error.details})
+    if (error) {
+      logger.error(
+        "resetPasswordSchemaValidation ::  user data is invalid",
+        error.details
+      );
+      return res.status(400).send({ message: error.details });
     }
-    logger.info("resetPasswordSchemaValidation ::  user data is valid", req.body);
+    logger.info(
+      "resetPasswordSchemaValidation ::  user data is valid",
+      req.body
+    );
     req.body = value;
     next();
   } catch (error) {
@@ -310,9 +352,7 @@ const resetPasswordSchemaValidation = async (req,res,next) => {
     );
     return res.status(500).send({ message: error.message });
   }
-}
-
-
+};
 
 module.exports = {
   userSignUpSchemaValidation,
@@ -321,7 +361,8 @@ module.exports = {
   userUpdateValidationSchema,
   productValidationAddSchema,
   productValidationUpdateSchema,
+  addToCartSchemaValidation,
   verifyUserEmailValidation,
   resetForgetPasswordSchemaValidation,
-  resetPasswordSchemaValidation
+  resetPasswordSchemaValidation,
 };
