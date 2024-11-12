@@ -188,6 +188,10 @@ const handleDeleteProduct = async (req, res) => {
     }
     const deletedProduct = await Product.findOneAndDelete({_id: deleteId,createdBy: req.user._id});
     console.log(deletedProduct);
+    if(!deletedProduct){
+      logger.error("handleDeleteProduct :: Product not exist for ID");
+      return res.status(404).json({ message: "Product not found" });
+    }
     logger.info("handleDeleteProduct :: Product Deleted Successfully by ID");
     return res.status(200).json({ message: "Product Deleted" });
   } catch (error) {
