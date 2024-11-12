@@ -5,6 +5,8 @@ const { createAdmin, getAllAdmin } = require("../services/user");
 const EnumtypeOfRole = require("../wrapper/enums");
 const { getAllPartner } = require("../services/partner");
 const { getAllCustomer } = require("../services/customer");
+const jwt = require("jsonwebtoken");
+const sendCredentialEmail = require("../wrapper/sendCredentials");
 
 const handleAddAdmin = async (req, res) => {
   try {
@@ -38,10 +40,17 @@ const handleAddAdmin = async (req, res) => {
       updatedBy: req.user ? req.user._id : null,
     });
     newUser.save();
+
+    const token = jwt.sign(
+      { _id: newUser._id, role: newUser.role.role_name, email: newUser.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "8h" }
+    );
     console.log(newUser);
+    sendCredentialEmail(newUser,password,token);
 
     logger.info("handleAddUser :: User Created Successfullyy");
-    return res.status(201).json({ message: "admin Created Successfully", admin: newUser });
+    return res.status(201).json({ message: "admin Created Successfully",token: token, admin: newUser });
   } catch (error) {
     console.log("Error in admin", error);
     logger.error(`Internal server error ${error}`);

@@ -7,7 +7,9 @@ const createUser = async (userData) => {
     ...userData,
     password: hashedPassword,
   });
-  return await newUser.save();
+  const savedUser = await newUser.save();
+  await savedUser.populate('role');
+  return savedUser;  
 };
 
 const getUserByEmail = async (email) => {

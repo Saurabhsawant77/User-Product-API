@@ -102,20 +102,20 @@ const handleGetProductById = async (req, res) => {
 
 const handleUpdateProduct = async (req, res) => {
   try {
-    const updateId = req.params.id;
-
+    const updateId = req.params.updateId;
+    console.log(updateId + "-----");
     if (!updateId) {
       logger.error("handleUpdateProduct :: Product ID not provided");
       return res.status(404).json({ message: "Product not found" });
     }
-    // console.log(req.file);
+    console.log(req.file);
     if (req.file) {
       req.body.image = req.file.path;
     }
+    console.log(req.body, "Request body");
     const updatedProduct = await Product.findByIdAndUpdate(updateId, req.body, {
       new: true,
     });
-    console.log(req.body, "Request body");
     if (!updatedProduct) {
       logger.error("handleUpdateProduct :: Product not found for ID");
       return res.status(404).json({ message: "Product not found for ID" });
@@ -199,7 +199,8 @@ const handleDeleteProduct = async (req, res) => {
       logger.error("handleDeleteProduct :: Product not exist for ID");
       return res.status(404).json({ message: "Product not found" });
     }
-    const deletedProduct = await Product.findByIdAndDelete(deleteId);
+    const deletedProduct = await Product.findOneAndDelete({_id: deleteId,createdBy: req.user._id});
+    console.log(deletedProduct);
     logger.info("handleDeleteProduct :: Product Deleted Successfully by ID");
     return res.status(200).json({ message: "Product Deleted" });
   } catch (error) {
@@ -264,16 +265,15 @@ const handleGetProductByName = async (req, res) => {
     const { name } = req.query;
 
     if (!name) {
-      logger.error("handleGetProductByName :: Product not found");
-      return res.status(404).json({ message: "Product not found" });
+      logger.error("handleGetProductByName :: Product not found" + name);
+      return res.status(404).json({ message: "Product not found++++" });
     } else {
-      const productByName = await Product.find({
-        name: name,
-        isVerified: true,
-      });
 
-      if (!productByName.isVerified) {
-        logger.error("handleGetProductByName :: Product not found");
+      const productByName = await Product.find({ name: name , isVerified : true , createdBy : req.user._id});
+      console.log(productByName);
+
+      if(productByName.length ===0 || !productByName){
+        logger.error("handleGetProductByName :: Product not found" );
         return res.status(404).json({ message: "Product not found" });
       }
 
