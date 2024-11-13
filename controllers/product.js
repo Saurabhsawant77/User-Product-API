@@ -113,7 +113,7 @@ const handleUpdateProduct = async (req, res) => {
       req.body.image = req.file.path;
     }
     console.log(req.body, "Request body");
-    const updatedProduct = await Product.findByIdAndUpdate(updateId, req.body, {
+    const updatedProduct = await Product.findByIdAndUpdate(updateId, {...req.body,updatedBy: req.user._id,}, {
       new: true,
     });
     if (!updatedProduct) {
