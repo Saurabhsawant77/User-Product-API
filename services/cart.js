@@ -47,6 +47,15 @@ const getAllCarts = async (req, res) => {
   }
 };
 
+// const removeProductById = async (cartId,productId) => {
+//   //remove product from cart by product id
+
+//   const removeProductById = await Cart.findByIdAndUpdate(cartId,{
+//     {items: [{ product_id: productId }],}
+//   });
+//   return removeProductById;
+// };
+
 module.exports = {
   createCart,
   getAllCarts,

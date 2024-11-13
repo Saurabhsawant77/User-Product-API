@@ -5,7 +5,12 @@ const {
 } = require("../controllers/product");
 const authenticateToken = require("../middleware/jwtAuthentication");
 const { handleAddToCart, handleGetAllCarts } = require("../controllers/cart");
-const { addToCartSchemaValidation } = require("../middleware/joiValidation");
+const {
+  addToCartSchemaValidation,
+  addressSchemaValidation,
+  productSchemaValidation,
+} = require("../middleware/joiValidation");
+const { handleAddAddress, handlePurchase } = require("../controllers/customer");
 
 const customerRouter = express.Router();
 
@@ -29,6 +34,20 @@ customerRouter.get(
   "/get-all-carts",
   authenticateToken(["CUSTOMER"]),
   handleGetAllCarts
+);
+
+customerRouter.post(
+  "/add-address",
+  authenticateToken(["CUSTOMER"]),
+  addressSchemaValidation,
+  handleAddAddress
+);
+
+customerRouter.post(
+  "/purchase",
+  authenticateToken(["CUSTOMER"]),
+  productSchemaValidation,
+  handlePurchase
 );
 
 module.exports = customerRouter;
