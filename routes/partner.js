@@ -13,9 +13,7 @@ partnerRouter.post("/add-product",authenticateToken(["PARTNER"]),upload.single("
 partnerRouter.put("/updateProduct/:updateId",authenticateToken(["PARTNER"]),upload.single("image"),productValidationUpdateSchema,handleUpdateProduct);
 partnerRouter.get("/",authenticateToken(["PARTNER"]),handleGetAllProductsAddedByPartner);
 partnerRouter.get("/search",authenticateToken(["PARTNER"]),handleGetProductByName);
-partnerRouter.delete("/delete-product/:id",authenticateToken(["PARTNER"]),handleDeleteProduct);
-
-
+partnerRouter.delete("/delete-product/:id",authenticateToken(["PARTNER","ADMIN"]),handleDeleteProduct);
 
 
 module.exports = partnerRouter;
