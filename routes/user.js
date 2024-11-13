@@ -2,7 +2,7 @@ const express = require("express");
 const { handleGetAllAdmin, handleAddAdmin, handleGetAllPartner, handleGetAllCustomer, handleUpdateUserById } = require("../controllers/user");
 const authenticateToken = require("../middleware/jwtAuthentication");
 const { upload } = require("../wrapper/multer");
-const { handleUpdateProduct, handleGetAllProducts, handleGetProductsToVerifyByAdmin } = require("../controllers/product");
+const { handleUpdateProduct, handleGetAllProducts, handleGetProductsToVerifyByAdmin, handleGetProductsVerifiedByAdmin } = require("../controllers/product");
 const { handleAddPartner, handleGetAllPartnersAddedByAdmin } = require("../controllers/partner");
 const { userAddValidationSchema, userUpdateValidationSchema, productValidationUpdateSchema } = require("../middleware/joiValidation");
 
@@ -19,6 +19,7 @@ userRouter.get("/all-partners",authenticateToken(["SUPER_ADMIN"]),handleGetAllPa
 userRouter.get("/all-products",authenticateToken(["SUPER_ADMIN"]),handleGetAllProducts);
 userRouter.get("/all-customers",authenticateToken(["SUPER_ADMIN"]),handleGetAllCustomer);
 userRouter.get("/verfyingproducts",authenticateToken(["ADMIN"]),handleGetProductsToVerifyByAdmin);
+userRouter.get("/verfiedproducts",authenticateToken(["ADMIN"]),handleGetProductsVerifiedByAdmin);
 
 
 
