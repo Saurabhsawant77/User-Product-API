@@ -20,6 +20,7 @@ const customerProductSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+//customer product model
 const CustomerProduct = mongoose.model(
   "CustomerProduct",
   customerProductSchema
