@@ -278,11 +278,9 @@ const addToCartSchemaValidation = async (req, res, next) => {
       "addToCartSchemaValidation ::  add to cart data is invalid",
       error.details
     );
-    return res
-      .status(500)
-      .json({
-        message: "addToCartSchemaValidation ::  add to cart data is invalid",
-      });
+    return res.status(500).json({
+      message: "addToCartSchemaValidation ::  add to cart data is invalid",
+    });
   }
 };
 
@@ -354,6 +352,68 @@ const resetPasswordSchemaValidation = async (req, res, next) => {
   }
 };
 
+const addressSchema = Joi.object({
+  street: Joi.string().required(),
+  city: Joi.string().required(),
+  state: Joi.string().required(),
+  pinCode: Joi.number().integer().min(100000).max(999999).required(),
+
+  country: Joi.string().required(),
+});
+
+const addressSchemaValidation = async (req, res, next) => {
+  try {
+    const { error, value } = await addressSchema.validate(req.body, {
+      abortEarly: false,
+    });
+
+    if (error) {
+      logger.error(
+        "addressSchemaValidation ::  address data is invalid",
+        error.details
+      );
+      return res.status(400).send({ message: error.details });
+    }
+    logger.info("addressSchemaValidation ::  address data is valid", req.body);
+    req.body = value;
+    next();
+  } catch (error) {
+    logger.error(
+      "addressSchemaValidation ::  address data is invalid",
+      req.body
+    );
+    return res.status(500).send({ message: error.message });
+  }
+};
+
+const productSchema = Joi.object({
+  products: Joi.array().required(),
+});
+const productSchemaValidation = async (req, res, next) => {
+  try {
+    const { error, value } = await productSchema.validate(req.body, {
+      abortEarly: false,
+    });
+
+    if (error) {
+      logger.error(
+        "productSchemaValidation ::  products data is invalid",
+        error.details
+      );
+      return res.status(400).send({ message: error.details });
+    }
+    logger.info("productSchemaValidation ::  products data is valid", req.body);
+    req.body = value;
+    next();
+  } catch (error) {
+    logger.error(
+      "productSchemaValidation ::  products data is invalid",
+      req.body
+    );
+    return res.status(500).send({ message: error.message });
+  }
+};
+
 module.exports = {
   userSignUpSchemaValidation,
   userLoginValidationSchema,
@@ -365,4 +425,6 @@ module.exports = {
   verifyUserEmailValidation,
   resetForgetPasswordSchemaValidation,
   resetPasswordSchemaValidation,
+  addressSchemaValidation,
+  productSchemaValidation,
 };
