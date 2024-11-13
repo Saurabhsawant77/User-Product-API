@@ -192,6 +192,67 @@ const handleGetProductsToVerifyByAdmin = async (req, res) => {
   }
 };
 
+const handleGetProductsVerifiedByAdmin = async (req, res) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.user._id);
+    const products = await Product.aggregate([
+      {
+        $lookup: {
+          from: "users",
+          localField: "partner_id",
+          foreignField: "_id",
+          as: "partner_details",
+        },
+      },
+      {
+        $unwind: "$partner_details",
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "partner_details.createdBy",
+          foreignField: "_id",
+          as: "admin_details",
+        },
+      },
+      {
+        $unwind: "$admin_details",
+      },
+      {
+        $match: {
+          "admin_details._id": userId,
+        },
+      },
+      {
+        $match: {
+          isVerified: true,
+        },
+      },
+    ]);
+    console.log("products :: ", products + " " + req.user._id);
+    if (products.length === 0) {
+      logger.error("handleGetProductsToVerifyByAdmin :: Products not found");
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    logger.info(
+      "handleGetProductsToVerifyByAdmin :: Product fetched successfully"
+    );
+    return res
+      .status(200)
+      .json({ message: "Product fetched successfully", data: products });
+  } catch (error) {
+    console.log(error);
+    logger.error(
+      "handleGetProductsToVerifyByAdmin :: Error fetching product",
+      error
+    );
+    return res
+      .status(500)
+      .json({ message: "Internal server error", error: error });
+  }
+};
+
 const handleDeleteProduct = async (req, res) => {
   try {
     const deleteId = req.params.id;
@@ -199,14 +260,14 @@ const handleDeleteProduct = async (req, res) => {
       logger.error("handleDeleteProduct :: Product not exist for ID");
       return res.status(404).json({ message: "Product not found" });
     }
-    const deletedProduct = await Product.findOneAndDelete({_id: deleteId,createdBy: req.user._id});
+    const deletedProduct = await Product.findOneAndDelete({_id: deleteId});  //createdBy: req.user._id
     console.log(deletedProduct);
     if(!deletedProduct){
       logger.error("handleDeleteProduct :: Product not exist for ID");
       return res.status(404).json({ message: "Product not found" });
     }
     logger.info("handleDeleteProduct :: Product Deleted Successfully by ID");
-    return res.status(200).json({ message: "Product Deleted" });
+    return res.status(200).json({ message: "Product Deleted" ,Product:deletedProduct});
   } catch (error) {
     logger.error(
       "handleDeleteProduct :: Internal Server Error handleDeleteProduct",
@@ -308,4 +369,5 @@ module.exports = {
   handleGetProductByName,
   handleGetAllProductsAddedByPartner,
   handleGetProductsToVerifyByAdmin,
+  handleGetProductsVerifiedByAdmin,
 };
