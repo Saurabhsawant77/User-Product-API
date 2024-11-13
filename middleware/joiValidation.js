@@ -145,7 +145,7 @@ const userAddValidationSchema = async (req, res, next) => {
 };
 
 const updateUserSchema = Joi.object({
-  name: Joi.string().max(20).optional(),
+  username: Joi.string().max(20).optional(),
   email: Joi.string().email().optional(),
   password: Joi.string().min(8).optional(),
   phone: Joi.number()

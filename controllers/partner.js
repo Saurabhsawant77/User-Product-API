@@ -63,8 +63,6 @@ const handleAddPartner = async (req, res) => {
   }
 };
 
-
-
 const handleGetAllPartnersAddedByAdmin = async (req, res) => {
   try {
     const allPartner = await getAllPartnerAddedByAdmin(req);

@@ -12,7 +12,7 @@ const userRouter = express.Router();
 userRouter.post("/add", authenticateToken(["SUPER_ADMIN"]),userAddValidationSchema, handleAddAdmin);
 userRouter.post("/add-partner",authenticateToken(["ADMIN"]),upload.single("profileImage"),userAddValidationSchema,handleAddPartner);
 userRouter.put("/verify-product/:updateId",authenticateToken(["ADMIN"]),upload.single("image"),productValidationUpdateSchema,handleUpdateProduct);
-userRouter.put("/update-user/:id",authenticateToken(["ADMIN"]),upload.single("image"),userUpdateValidationSchema,handleUpdateUserById);
+userRouter.put("/update-user/:id",authenticateToken(["SUPER_ADMIN","ADMIN"]),upload.single("image"),userUpdateValidationSchema,handleUpdateUserById);
 userRouter.get("/partners-added-by-admin",authenticateToken(["ADMIN"]),handleGetAllPartnersAddedByAdmin);
 userRouter.get("/all-admins", authenticateToken(["SUPER_ADMIN"]), handleGetAllAdmin);
 userRouter.get("/all-partners",authenticateToken(["SUPER_ADMIN"]),handleGetAllPartner);
