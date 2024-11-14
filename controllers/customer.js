@@ -49,7 +49,11 @@ const handlePurchase = async (req, res) => {
 
     return res
       .status(201)
-      .json({ message: "Order Successful....", address: address });
+      .json({
+        message: "Order Successful....",
+        address: address,
+        products: purchase,
+      });
   } catch (error) {
     return res.status(500).json({ message: "server error", error: error });
   }

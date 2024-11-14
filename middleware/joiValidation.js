@@ -224,6 +224,7 @@ const productUpdateSchema = Joi.object({
   name: Joi.string().optional(),
   description: Joi.string().optional(),
   isVerified: Joi.boolean().optional(),
+  isDenied: Joi.boolean().optional(),
   image: Joi.string().uri().optional(),
   price: Joi.number().integer().min(0).optional(),
   rating: Joi.number().integer().min(1).max(5).optional(),
