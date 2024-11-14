@@ -1,3 +1,4 @@
+const { ref } = require("joi");
 const mongoose = require("mongoose");
 
 const productSchema = mongoose.Schema(
@@ -21,8 +22,9 @@ const productSchema = mongoose.Schema(
       required: false,
     },
     image: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
+      ref : "Image",
     },
     price: {
       type: Number,

@@ -4,6 +4,7 @@ const Product = require("../models/product");
 const Partner = require("../models/partner");
 const mongoose = require("mongoose");
 const { populate } = require("../models/role");
+const { getProductsWithImage } = require("../wrapper/imageUtils");
 
 const handleCreateProduct = async (req, res) => {
   try {
@@ -11,19 +12,26 @@ const handleCreateProduct = async (req, res) => {
       logger.error("handleCreateProduct :: No image uploaded");
       return res.status(400).json({ message: "No image uploaded" });
     }
+    const productImg = {
+      name : req.file.filename,
+      image : `/uploads/images/${req.file.filename}`
+    }
 
+    const img = await getProductsWithImage(req,productImg); 
     const validate = await productValidationAddSchema;
     const { name, description, price, rating } = req.body;
+    
     const newProduct = await Product({
       name,
       description,
       partner_id: req.user._id,
-      image: `/uploads/images/${req.file.filename}`,
+      image: img,
       price,
       rating,
       createdBy: req.user._id,
       updatedBy: req.user._id,
     }).save();
+    // const productbase64 = await getProductsWithImage(newProduct);
     logger.info("handleCreateProduct ::: Product added Successfully ");
     return res
       .status(200)
@@ -41,7 +49,7 @@ const handleCreateProduct = async (req, res) => {
 
 const handleGetAllProducts = async (req, res) => {
   try {
-    const allProduct = await Product.find({});
+    const allProduct = await Product.find({}).populate('image');
     if (!allProduct) {
       logger.error("handleGetAllProducts :: No Products Found");
       return res.status(400).json({ message: "No Products Found" });
@@ -54,13 +62,13 @@ const handleGetAllProducts = async (req, res) => {
     );
     return res
       .status(500)
-      .json({ message: "Internal Server Error handleGetAllProducts" });
+      .json({ message: "Internal Server Error handleGetAllProducts ======" });
   }
 };
 
 const handleGetAllProductsAddedByPartner = async (req, res) => {
   try {
-    const allProduct = await Product.find({ createdBy: req.user._id });
+    const allProduct = await Product.find({ createdBy: req.user._id }).populate('image');
     if (!allProduct) {
       logger.error("handleGetAllProductsAddedByPartner :: No Products Found");
       return res.status(400).json({ message: "No Products Found" });
@@ -82,7 +90,7 @@ const handleGetAllProductsAddedByPartner = async (req, res) => {
 const handleGetProductById = async (req, res) => {
   try {
     const id = req.params.id;
-    const product = await Product.findById(id);
+    const product = await Product.findById(id).populate('image');
 
     if (!product) {
       logger.error("handleGetProductById :: Product not found by ID");
@@ -158,6 +166,17 @@ const handleGetProductsToVerifyByAdmin = async (req, res) => {
         $unwind: "$admin_details",
       },
       {
+        $lookup: {
+          from: "images",            
+          localField: "image",       
+          foreignField: "_id",       
+          as: "image_details",        
+        },
+      },
+      {
+        $unwind: "$image_details",   
+      },
+      {
         $match: {
           "admin_details._id": userId,
         },
@@ -217,6 +236,17 @@ const handleGetProductsVerifiedByAdmin = async (req, res) => {
       },
       {
         $unwind: "$admin_details",
+      },
+      {
+        $lookup: {
+          from: "images",            
+          localField: "image",       
+          foreignField: "_id",       
+          as: "image_details",        
+        },
+      },
+      {
+        $unwind: "$image_details",   
       },
       {
         $match: {
@@ -288,7 +318,7 @@ const handleGetProductByUserId = async (req, res) => {
       logger.error("Product with User not found");
       return res.status(404).json({ message: "Product with User not found" });
     }
-    const productsByUserId = await Product.find({ createdBy: userId });
+    const productsByUserId = await Product.find({ createdBy: userId }).populate('image');
     logger.info("handleGetProductByUserId :: Product fetched By User ID");
     return res
       .status(200)
@@ -308,7 +338,7 @@ const handleGetPublishedProducts = async (req, res) => {
       logger.error("handleGetPublishedProducts :: Product not Published");
       return res.status(404).json({ message: "Product not found" });
     }
-    const published = await Product.find({ isVerified: true });
+    const published = await Product.find({ isVerified: true }).populate('image');
     logger.info("handleGetPublishedProducts :: Published Products fetched ");
     return res
       .status(200)
@@ -333,7 +363,7 @@ const handleGetProductByName = async (req, res) => {
       logger.error("handleGetProductByName :: Product not found" + name);
       return res.status(404).json({ message: "Product not found++++" });
     } else {
-      const productByName = await Product.find({ name: name , isVerified : true });
+      const productByName = await Product.find({ name: name , isVerified : true }).populate('image');
       console.log(productByName);
 
       if(productByName.length ===0 || !productByName){
