@@ -184,13 +184,14 @@ const handleGetProductsToVerifyByAdmin = async (req, res) => {
       {
         $match: {
           isVerified: false,
+          isDenied : false,
         },
       },
     ]);
     console.log("products :: ", products + " " + req.user._id);
     if (products.length === 0) {
       logger.error("handleGetProductsToVerifyByAdmin :: Products not found");
-      return res.status(404).json({ message: "Product not found" });
+      return res.status(200).json({ message: "No Products to verify" });
     }
 
     logger.info(
