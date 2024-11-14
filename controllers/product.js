@@ -255,9 +255,12 @@ const handleGetProductsVerifiedByAdmin = async (req, res) => {
       },
       {
         $match: {
-          isVerified: true,
-        },
-      },
+          $or: [
+            { isDenied: true },
+            { isVerified: true }
+          ]
+        }
+      }
     ]);
     console.log("products :: ", products + " " + req.user._id);
     if (products.length === 0) {
