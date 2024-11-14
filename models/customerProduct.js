@@ -1,3 +1,4 @@
+const { boolean } = require("joi");
 const mongoose = require("mongoose");
 
 const customerProductSchema = new mongoose.Schema(
@@ -15,6 +16,10 @@ const customerProductSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Address",
       required: true,
+    },
+    orderCancel: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

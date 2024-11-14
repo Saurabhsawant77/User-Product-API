@@ -10,7 +10,11 @@ const {
   addressSchemaValidation,
   productSchemaValidation,
 } = require("../middleware/joiValidation");
-const { handleAddAddress, handlePurchase } = require("../controllers/customer");
+const {
+  handleAddAddress,
+  handlePurchase,
+  handleGetAllOrderDetailsByCustomer,
+} = require("../controllers/customer");
 
 const customerRouter = express.Router();
 
@@ -48,6 +52,12 @@ customerRouter.post(
   authenticateToken(["CUSTOMER"]),
   productSchemaValidation,
   handlePurchase
+);
+
+customerRouter.get(
+  "/order-details",
+  authenticateToken(["CUSTOMER"]),
+  handleGetAllOrderDetailsByCustomer
 );
 
 module.exports = customerRouter;
