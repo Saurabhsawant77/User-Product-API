@@ -20,6 +20,11 @@ const productSchema = mongoose.Schema(
       default: false,
       required: false,
     },
+    isDenied: {
+      type: Boolean,
+      default: false,
+      required: false,
+    },
     image: {
       type: String,
       required: true,
