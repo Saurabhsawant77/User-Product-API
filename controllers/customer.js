@@ -1,5 +1,6 @@
 const Address = require("../models/address");
 const CustomerProduct = require("../models/customerProduct");
+const logger = require("../wrapper/logger");
 
 const handleAddAddress = async (req, res) => {
   try {
@@ -20,10 +21,12 @@ const handleAddAddress = async (req, res) => {
     const address = await Address.find({ customer_id: req.user._id }).populate(
       "customer_id"
     );
+
     return res
       .status(201)
       .json({ message: "address add successfully....", address: address });
   } catch (error) {
+    logger.error("handleAddAddress", error.message);
     return res.status(500).json({ message: "server error", error: error });
   }
 };
@@ -47,19 +50,35 @@ const handlePurchase = async (req, res) => {
     });
     await purchase.save();
 
-    return res
-      .status(201)
-      .json({
-        message: "Order Successful....",
-        address: address,
-        products: purchase,
-      });
+    return res.status(201).json({
+      message: "Order Successful....",
+      address: address,
+      products: purchase,
+    });
   } catch (error) {
+    logger.error("handlePurchase", error.message);
     return res.status(500).json({ message: "server error", error: error });
+  }
+};
+
+const handleGetAllOrderDetailsByCustomer = async (req, res) => {
+  try {
+    const getAllOrderDetails = await CustomerProduct.find({
+      customer_id: req.user._id,
+    }).populate("address_id");
+
+    return res.status(200).json({ getAllOrderDetails });
+  } catch (error) {
+    logger.error("handleGetAllOrderDetailsByCustomer", error.message);
+    return res.status(500).json({
+      message: "handleGetAllOrderDetailsByCustomer  ::: server error",
+      error: error,
+    });
   }
 };
 
 module.exports = {
   handleAddAddress,
   handlePurchase,
+  handleGetAllOrderDetailsByCustomer,
 };
