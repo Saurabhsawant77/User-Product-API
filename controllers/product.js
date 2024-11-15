@@ -117,17 +117,28 @@ const handleUpdateProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
     console.log(req.file);
+
+    let img = null;
     if (req.file) {
-      req.body.image = req.file.path;
-    }
-    const productImg = {
-      name : req.file.filename,
-      image : `/uploads/images/${req.file.filename}`
+      const productImg = {
+        name: req.file.filename,
+        image: `/uploads/images/${req.file.filename}`
+      };
+      img = await getProductsWithImage(req, productImg);
     }
 
-    const img = await getProductsWithImage(req,productImg); 
+    const updateData = {
+      ...req.body,
+      updatedBy: req.user._id,
+    };
+
+    // Only add image to updateData if a new image is uploaded
+    if (img) {
+      updateData.image = img;
+    }
+
     console.log(req.body, "Request body");
-    const updatedProduct = await Product.findByIdAndUpdate(updateId, {...req.body,image: img,updatedBy: req.user._id}, {
+    const updatedProduct = await Product.findByIdAndUpdate(updateId, updateData, {
       new: true,
     });
     if (!updatedProduct) {
