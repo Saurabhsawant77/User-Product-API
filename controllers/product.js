@@ -120,8 +120,14 @@ const handleUpdateProduct = async (req, res) => {
     if (req.file) {
       req.body.image = req.file.path;
     }
+    const productImg = {
+      name : req.file.filename,
+      image : `/uploads/images/${req.file.filename}`
+    }
+
+    const img = await getProductsWithImage(req,productImg); 
     console.log(req.body, "Request body");
-    const updatedProduct = await Product.findByIdAndUpdate(updateId, {...req.body,updatedBy: req.user._id,}, {
+    const updatedProduct = await Product.findByIdAndUpdate(updateId, {...req.body,image: img,updatedBy: req.user._id}, {
       new: true,
     });
     if (!updatedProduct) {

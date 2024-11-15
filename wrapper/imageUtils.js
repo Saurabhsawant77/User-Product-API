@@ -4,12 +4,12 @@ const ImageModel = require("../models/image");
 
 async function getProductsWithImage(req,product) {
   try {
-    // Ensure the product has an image path
+    //Check product has an image path
     if (!product.image) {
       throw new Error("Product has no image path");
     }
 
-    // Construct the full path to the image
+    //full path to the image
     const imagePath = path.join(__dirname, "../public", product.image);
 
     // Read the image file asynchronously
