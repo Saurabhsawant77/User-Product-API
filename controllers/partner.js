@@ -23,12 +23,23 @@ const handleAddPartner = async (req, res) => {
       return res.status(400).json({ message: "Role not found" });
     }
 
-    const existingUser = await User.findOne({ email });
-    console.log(roleDocument, existingUser);
-    if (existingUser) {
-      logger.error("User already exists", existingUser);
-      return res.status(400).json({ message: "User already exists" });
+    const existingUser1 = await User.findOne({ email });
+    const existingUser2 = await User.findOne({ phone });
+
+    // console.log(roleDocument, existingUser);
+    if(existingUser1 && existingUser2){
+      logger.error("User already exists", existingUser1);
+      return res.status(400).json({ message: "User email & phone already exists" });
     }
+    else if (existingUser1) {
+      logger.error("User already exists", existingUser1);
+      return res.status(400).json({ message: "User email already exists" });
+    }
+    else if(existingUser2){
+      logger.error("User already exists", existingUser2);
+      return res.status(400).json({ message: "User phone already exists" });
+    }
+
     console.log("Inside handle addd");
     const newUser = await createUser({
       username,

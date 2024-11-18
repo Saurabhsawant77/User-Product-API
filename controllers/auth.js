@@ -28,9 +28,17 @@ const handleSignUp = async (req, res) => {
     const existingUser1 = await User.findOne({ email });
     const existingUser2 = await User.findOne({ phone });
 
-    if (existingUser1 || existingUser2) {
-      logger.error("User already exists", existingUser1 || existingUser2);
-      return res.status(400).json({ message: "User already exists" });
+    if(existingUser1 && existingUser2){
+      logger.error("User already exists", existingUser1);
+      return res.status(400).json({ message: "User email & phone already exists" });
+    }
+    else if (existingUser1) {
+      logger.error("User already exists", existingUser1);
+      return res.status(400).json({ message: "User email already exists" });
+    }
+    else if(existingUser2){
+      logger.error("User already exists", existingUser2);
+      return res.status(400).json({ message: "User phone already exists" });
     }
 
     const newUser = await createUser({
