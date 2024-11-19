@@ -112,20 +112,52 @@ const handleUpdateUserById = async (req, res) => {
   try {
     const id = req.params.id;
     const updateUser = await User.findById(id);
+
     if (!updateUser) {
       logger.error("handleUpdateUserById :: User not found");
       return res.status(404).json({ message: "User not found" });
-    } else {
-      const updatedData = await User.findByIdAndUpdate(req.params.id, req.body);
-      logger.info("User Updated Successfully");
-      return res.json({ message: "success" });
     }
+
+    const { phone, email } = req.body;
+
+    if (phone) {
+      const existingPhoneUser = await User.findOne({ phone, _id: { $ne: id } });
+      if (existingPhoneUser) {
+        logger.error(
+          "handleUpdateUserById :: Phone number already exists in the database"
+        );
+        return res
+          .status(400)
+          .json({ message: "Phone number already exists in the database" });
+      }
+    }
+
+    if (email) {
+      const existingEmailUser = await User.findOne({ email, _id: { $ne: id } });
+      if (existingEmailUser) {
+        logger.error(
+          "handleUpdateUserById :: Email address already exists in the database"
+        );
+        return res
+          .status(400)
+          .json({ message: "Email address already exists in the database" });
+      }
+    }
+
+    const updatedData = await User.findByIdAndUpdate(
+      id,
+      req.body,
+      { new: true, runValidators: true } // Return updated document and run validators
+    );
+
+    logger.info("User Updated Successfully", updatedData);
+    return res.json({ message: "success", user: updatedData });
   } catch (error) {
-    // console.log(error + " Error in handleUpdateUserById");
     logger.error("handleUpdateUserById :: Internal server error", error);
-    return res.status(500).json({ message: `Internal server error` });
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 const handleGetAllPartner = async (req, res) => {
   try {
