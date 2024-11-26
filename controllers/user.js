@@ -124,11 +124,11 @@ const handleUpdateUserById = async (req, res) => {
       const existingPhoneUser = await User.findOne({ phone, _id: { $ne: id } });
       if (existingPhoneUser) {
         logger.error(
-          "handleUpdateUserById :: Phone number already exists in the database"
+          "handleUpdateUserById :: Phone number already exists"
         );
         return res
           .status(400)
-          .json({ message: "Phone number already exists in the database" });
+          .json({ message: "Phone number already exists" });
       }
     }
 
@@ -136,11 +136,11 @@ const handleUpdateUserById = async (req, res) => {
       const existingEmailUser = await User.findOne({ email, _id: { $ne: id } });
       if (existingEmailUser) {
         logger.error(
-          "handleUpdateUserById :: Email address already exists in the database"
+          "handleUpdateUserById :: Email address already exists"
         );
         return res
           .status(400)
-          .json({ message: "Email address already exists in the database" });
+          .json({ message: "Email address already exists" });
       }
     }
 
