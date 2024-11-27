@@ -12,6 +12,7 @@ const sendEmail = (user, token) => {
 
   //Define Email Options
   const url = `${process.env.FORGET_PASSWORD_URL}?token=${token}`;
+  console.log(process.env.FROM_EMAIL);
   const mailOptions = {
     from: process.env.FROM_EMAIL,
     to: `${user.email}`,
